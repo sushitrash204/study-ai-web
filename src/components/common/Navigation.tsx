@@ -15,12 +15,19 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 
+interface NavItem {
+  icon: any;
+  label: string;
+  href: string;
+  special?: boolean;
+}
+
 export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { logout } = useAuthStore();
 
-  const navItems = [
+  const navItems: NavItem[] = [
     { icon: LayoutDashboard, label: 'Tổng quan', href: '/' },
     { icon: BookOpen, label: 'Môn học', href: '/subjects' },
     { icon: MessageSquare, label: 'Thảo luận AI', href: '/chat' },
@@ -80,7 +87,7 @@ export function Sidebar() {
 export function BottomNav() {
   const pathname = usePathname();
 
-  const navItems: { icon: any, href: string, label: string, special?: boolean }[] = [
+  const navItems: NavItem[] = [
     { icon: BookOpen, href: '/subjects', label: "Môn học", special: false },
     { icon: FileText, href: '/documents', label: "Tài liệu", special: false },
     { icon: MessageSquare, href: '/chat', label: "Chat AI", special: false },
