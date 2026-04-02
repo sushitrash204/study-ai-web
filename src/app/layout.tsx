@@ -28,7 +28,7 @@ export default function RootLayout({
       className={`${nunito.variable} h-full antialiased font-sans`}
       style={{ colorScheme: 'light' }}
     >
-      <body className="min-h-full flex flex-col bg-[#F9FAFA] text-[#1F2937]">
+      <body className="min-h-full flex flex-col bg-[#F9FAFA] text-[#1F2937] overflow-x-hidden">
         <MainLayout>
           {children}
         </MainLayout>

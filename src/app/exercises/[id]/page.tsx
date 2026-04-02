@@ -255,7 +255,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                                                     <div className="mb-6">
                                                         <MathView content={audioData.cleanText} className="text-[17px] font-extrabold text-[#1F2937] leading-relaxed mb-4" />
                                                         {audioData.audioScript && (
-                                                            <AudioPlayer script={audioData.audioScript} lang={audioData.audioLang || 'en'} showScript={true} />
+                                                            <AudioPlayer script={audioData.audioScript} lang={audioData.audioLang || 'en'} showScript={true} canShowScript={true} />
                                                         )}
                                                     </div>
                                                 );
@@ -347,7 +347,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
                                     {audioData.audioScript && (
                                         <div className="my-6">
-                                            <AudioPlayer script={audioData.audioScript} lang={audioData.audioLang || 'en'} showScript={false} />
+                                            <AudioPlayer script={audioData.audioScript} lang={audioData.audioLang || 'en'} showScript={false} canShowScript={false} />
                                         </div>
                                     )}
 
@@ -567,7 +567,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                                     
                                     {audioData.audioScript && (
                                         <div className="mb-6 max-w-md">
-                                            <AudioPlayer script={audioData.audioScript} lang={audioData.audioLang || 'en'} showScript={false} />
+                                            <AudioPlayer script={audioData.audioScript} lang={audioData.audioLang || 'en'} showScript={false} canShowScript={false} />
                                         </div>
                                     )}
 

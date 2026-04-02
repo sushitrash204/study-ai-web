@@ -30,7 +30,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthInitializer>
-      <div className="min-h-screen bg-[#FAFAFA] text-[#1F2937] flex flex-col md:flex-row font-sans">
+      <div className="min-h-screen bg-[#FAFAFA] text-[#1F2937] flex flex-col md:flex-row font-sans overflow-x-hidden">
         {!isDetail && <Sidebar />}
         <main className={cn(
           "flex-1 flex flex-col min-h-screen relative",

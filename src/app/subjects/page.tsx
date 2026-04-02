@@ -40,9 +40,9 @@ export default function SubjectListPage() {
                     <p className="text-[#6B7280] font-medium text-[13px] md:text-[14px] text-center md:text-left">Quản lý các khóa học và tài liệu của bạn</p>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                    <div className="relative flex-1 md:w-80 group">
-                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#8E8E93] transition-colors">
+                <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto mb-12">
+                    <div className="relative w-full md:w-80 group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#8E8E93]">
                             <Search size={18} strokeWidth={2.5} />
                         </div>
                         <input
@@ -54,10 +54,10 @@ export default function SubjectListPage() {
                         />
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 w-full md:w-auto">
                         <button 
                             onClick={() => router.push('/documents')}
-                            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-4 py-3 bg-white border border-[#E5E7EB] hover:border-[#8B5CF6]/50 text-[#4B5563] hover:text-[#8B5CF6] rounded-2xl transition-all shadow-sm active:scale-95 shrink-0"
+                            className="flex-1 md:flex-none h-[52px] flex items-center justify-center space-x-1.5 px-4 bg-white border border-[#E5E7EB] hover:border-[#8B5CF6]/50 text-[#4B5563] hover:text-[#8B5CF6] rounded-2xl transition-all shadow-sm active:scale-95"
                             title="Thư viện tài liệu"
                         >
                             <FileText size={18} strokeWidth={2.5} />
@@ -65,7 +65,7 @@ export default function SubjectListPage() {
                         </button>
                         <button 
                             onClick={handleAddClick}
-                            className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-5 py-3 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-2xl transition-all shadow-[0_4px_12px_rgba(139,92,246,0.3)] active:scale-95 shrink-0"
+                            className="flex-1 md:flex-none h-[52px] flex items-center justify-center space-x-2 px-5 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-2xl transition-all shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:scale-95"
                         >
                             <Plus size={20} strokeWidth={2.5} />
                             <span className="font-bold">Thêm mới</span>
@@ -96,7 +96,7 @@ export default function SubjectListPage() {
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                     {filteredSubjects.map((subject) => (
                         <SubjectCard
                             key={subject.id}

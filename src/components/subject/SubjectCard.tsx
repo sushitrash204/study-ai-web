@@ -70,7 +70,7 @@ export default function SubjectCard({ name, color, onClick, onEdit, onDelete, cl
             </div>
             
             <div className="relative z-10 w-full transform group-hover:translate-x-1 transition-transform duration-300">
-                <h4 className="text-[17px] md:text-[22px] font-extrabold text-white leading-tight drop-shadow-md line-clamp-2">{name}</h4>
+                <h4 className="text-[16px] md:text-[22px] font-extrabold text-white leading-tight drop-shadow-md line-clamp-2">{name}</h4>
                 <div className="flex items-center mt-3 text-white/90 font-bold uppercase tracking-[0.15em] text-[10px]">
                     <span>Khóa học tích cực</span>
                     <ChevronRight size={14} className="ml-1 transform group-hover:translate-x-1 transition-transform" />

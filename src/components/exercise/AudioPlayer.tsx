@@ -11,9 +11,10 @@ interface AudioPlayerProps {
     script: string;
     lang?: string;
     showScript?: boolean;
+    canShowScript?: boolean;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScript: initialShowScript = false }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScript: initialShowScript = false, canShowScript = true }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [showScript, setShowScript] = useState(initialShowScript);
     const [isLoading, setIsLoading] = useState(false);
@@ -24,19 +25,43 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
     const togglePlay = () => {
         if (!audioRef.current) return;
 
+        // Reset if already playing or ended
         if (isPlaying) {
             audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(e => console.error("Audio Play Error:", e));
-        } else {
-            setIsLoading(true);
-            audioRef.current.play().then(() => {
+            audioRef.current.play().catch(() => useNativeSpeech());
+            return;
+        }
+
+        setIsLoading(true);
+        audioRef.current.play()
+            .then(() => {
                 setIsPlaying(true);
                 setIsLoading(false);
-            }).catch(e => {
-                console.error("Audio Play Error:", e);
+            })
+            .catch((err) => {
+                console.warn("Audio URL failed, using native speech fallback:", err);
+                useNativeSpeech();
+            });
+    };
+
+    const useNativeSpeech = () => {
+        if (typeof window !== 'undefined' && window.speechSynthesis) {
+            setIsLoading(true);
+            const utterance = new SpeechSynthesisUtterance(script);
+            utterance.lang = lang;
+            utterance.onstart = () => {
+                setIsPlaying(true);
+                setIsLoading(false);
+            };
+            utterance.onend = () => setIsPlaying(false);
+            utterance.onerror = () => {
                 setIsPlaying(false);
                 setIsLoading(false);
-            });
+            };
+            window.speechSynthesis.speak(utterance);
+        } else {
+            setIsLoading(false);
+            setIsPlaying(false);
         }
     };
 
@@ -69,12 +94,14 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
                     </div>
                 </div>
 
-                <button
-                    onClick={() => setShowScript(!showScript)}
-                    className="p-2 text-[#64748B] hover:bg-white rounded-xl transition-all"
-                >
-                    {showScript ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+                {canShowScript && (
+                    <button
+                        onClick={() => setShowScript(!showScript)}
+                        className="p-2 text-[#64748B] hover:bg-white rounded-xl transition-all"
+                    >
+                        {showScript ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                )}
 
                 <audio
                     ref={audioRef}
@@ -84,8 +111,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
                     onEnded={() => setIsPlaying(false)}
                     onError={(e) => { 
                         console.error("Audio Source Error:", e);
-                        setIsPlaying(false); 
-                        setIsLoading(false); 
+                        useNativeSpeech();
                     }}
                 />
             </div>
