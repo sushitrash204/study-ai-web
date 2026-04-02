@@ -19,7 +19,6 @@ interface NavItem {
   icon: any;
   label: string;
   href: string;
-  special?: boolean;
 }
 
 export function Sidebar() {
@@ -88,10 +87,10 @@ export function BottomNav() {
   const pathname = usePathname();
 
   const navItems: NavItem[] = [
-    { icon: BookOpen, href: '/subjects', label: "Môn học", special: false },
-    { icon: FileText, href: '/documents', label: "Tài liệu", special: false },
-    { icon: MessageSquare, href: '/chat', label: "Chat AI", special: false },
-    { icon: UserIcon, href: '/profile', label: "Hồ sơ", special: false },
+    { icon: BookOpen, href: '/subjects', label: "Môn học" },
+    { icon: FileText, href: '/documents', label: "Tài liệu" },
+    { icon: MessageSquare, href: '/chat', label: "Chat AI" },
+    { icon: UserIcon, href: '/profile', label: "Hồ sơ" },
   ];
 
   return (
@@ -102,18 +101,14 @@ export function BottomNav() {
           <Link 
             key={i} 
             href={item.href}
-            className={`flex flex-col items-center justify-center transition-all ${
-              item.special 
-                ? 'w-16 h-16 bg-[#8B5CF6] text-white rounded-full -translate-y-6 shadow-[0_8px_20px_rgba(139,92,246,0.4)] active:scale-95' 
-                : 'w-12 h-12'
-            }`}
+            className="flex flex-col items-center justify-center transition-all w-12 h-12"
           >
             <item.icon 
-                size={item.special ? 30 : 24} 
-                strokeWidth={active || item.special ? 2.5 : 2} 
-                className={item.special ? '' : (active ? 'text-[#8B5CF6]' : 'text-[#8E8E93]')} 
+                size={24} 
+                strokeWidth={active ? 2.5 : 2} 
+                className={active ? 'text-[#8B5CF6]' : 'text-[#8E8E93]'} 
             />
-            {item.label && !item.special && <span className={`text-[10px] font-bold mt-1 ${active ? 'text-[#8B5CF6]' : 'text-[#8E8E93]'}`}>{item.label}</span>}
+            {item.label && <span className={`text-[10px] font-bold mt-1 ${active ? 'text-[#8B5CF6]' : 'text-[#8E8E93]'}`}>{item.label}</span>}
           </Link>
         );
       })}
