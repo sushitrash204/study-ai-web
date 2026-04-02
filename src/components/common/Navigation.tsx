@@ -80,11 +80,11 @@ export function Sidebar() {
 export function BottomNav() {
   const pathname = usePathname();
 
-  const navItems = [
-    { icon: BookOpen, href: '/subjects', label: "Môn học" },
-    { icon: FileText, href: '/documents', label: "Tài liệu" },
-    { icon: MessageSquare, href: '/chat', label: "Chat AI" },
-    { icon: UserIcon, href: '/profile', label: "Hồ sơ" },
+  const navItems: { icon: any, href: string, label: string, special?: boolean }[] = [
+    { icon: BookOpen, href: '/subjects', label: "Môn học", special: false },
+    { icon: FileText, href: '/documents', label: "Tài liệu", special: false },
+    { icon: MessageSquare, href: '/chat', label: "Chat AI", special: false },
+    { icon: UserIcon, href: '/profile', label: "Hồ sơ", special: false },
   ];
 
   return (
