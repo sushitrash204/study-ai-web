@@ -46,9 +46,13 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
 
     const useNativeSpeech = () => {
         if (typeof window !== 'undefined' && window.speechSynthesis) {
+            window.speechSynthesis.cancel(); // Clear previous speech
             setIsLoading(true);
             const utterance = new SpeechSynthesisUtterance(script);
             utterance.lang = lang;
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            
             utterance.onstart = () => {
                 setIsPlaying(true);
                 setIsLoading(false);
