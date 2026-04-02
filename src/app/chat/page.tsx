@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useChatSession } from '@/hooks/chat/useChatSession';
 import { 
@@ -24,7 +24,7 @@ import DocumentPickerModal from '@/components/chat/DocumentPickerModal';
 
 function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
 
-export default function ChatPage() {
+function ChatContent() {
   const searchParams = useSearchParams();
   const summaryDocumentId = searchParams.get('summaryDocumentId') || undefined;
   const summaryTitle = searchParams.get('summaryTitle') || undefined;
@@ -291,4 +291,17 @@ export default function ChatPage() {
       </section>
     </div>
   );
+}
+
+export default function ChatPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex-1 flex flex-col items-center justify-center">
+                <Loader2 className="animate-spin text-[#8B5CF6] mb-4" size={40} />
+                <p className="text-[#6B7280] font-semibold">Đang tải phòng chat...</p>
+            </div>
+        }>
+            <ChatContent />
+        </Suspense>
+    );
 }
