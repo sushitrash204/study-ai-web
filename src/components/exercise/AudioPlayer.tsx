@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, RotateCcw, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -18,55 +18,52 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
     const [isPlaying, setIsPlaying] = useState(false);
     const [showScript, setShowScript] = useState(initialShowScript);
     const [isLoading, setIsLoading] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
-    const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(script.substring(0, 200))}&tl=${lang}&client=tw-ob`;
+    // Cleanup speech when component unmounts
+    useEffect(() => {
+        return () => {
+            if (typeof window !== 'undefined' && window.speechSynthesis) {
+                window.speechSynthesis.cancel();
+            }
+        };
+    }, []);
 
     const togglePlay = () => {
-        if (!audioRef.current) return;
+        if (typeof window === 'undefined' || !window.speechSynthesis) {
+            alert("Trình duyệt của bạn không hỗ trợ phát âm thanh này.");
+            return;
+        }
 
-        // Reset if already playing or ended
         if (isPlaying) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(() => useNativeSpeech());
+            window.speechSynthesis.cancel();
+            setIsPlaying(false);
             return;
         }
 
         setIsLoading(true);
-        audioRef.current.play()
-            .then(() => {
-                setIsPlaying(true);
-                setIsLoading(false);
-            })
-            .catch((err) => {
-                console.warn("Audio URL failed, using native speech fallback:", err);
-                useNativeSpeech();
-            });
-    };
+        window.speechSynthesis.cancel(); // Clear any pending speech
 
-    const useNativeSpeech = () => {
-        if (typeof window !== 'undefined' && window.speechSynthesis) {
-            window.speechSynthesis.cancel(); // Clear previous speech
-            setIsLoading(true);
-            const utterance = new SpeechSynthesisUtterance(script);
-            utterance.lang = lang;
-            utterance.rate = 1.0;
-            utterance.pitch = 1.0;
-            
-            utterance.onstart = () => {
-                setIsPlaying(true);
-                setIsLoading(false);
-            };
-            utterance.onend = () => setIsPlaying(false);
-            utterance.onerror = () => {
-                setIsPlaying(false);
-                setIsLoading(false);
-            };
-            window.speechSynthesis.speak(utterance);
-        } else {
+        const utterance = new SpeechSynthesisUtterance(script);
+        utterance.lang = lang;
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+
+        utterance.onstart = () => {
+            setIsPlaying(true);
             setIsLoading(false);
+        };
+
+        utterance.onend = () => {
             setIsPlaying(false);
-        }
+        };
+
+        utterance.onerror = (e) => {
+            console.error("Web Speech API Error:", e);
+            setIsPlaying(false);
+            setIsLoading(false);
+        };
+
+        window.speechSynthesis.speak(utterance);
     };
 
     return (
@@ -92,8 +89,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
                 <div className="flex-1 px-2">
                     <div className="h-1.5 w-full bg-[#E2E8F0] rounded-full overflow-hidden">
                         {isPlaying && (
-                            <div className="h-full bg-[#8B5CF6] animate-[progress_3s_linear_infinite]" 
-                                 style={{ animationDuration: `${script.length * 0.1}s` }} />
+                            <div className="h-full bg-[#8B5CF6] animate-[progress_linear_infinite]" 
+                                 style={{ animationDuration: `${script.length * 0.15}s` }} />
                         )}
                     </div>
                 </div>
@@ -106,24 +103,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
                         {showScript ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                 )}
-
-                <audio
-                    ref={audioRef}
-                    src={audioUrl}
-                    preload="auto"
-                    onPause={() => setIsPlaying(false)}
-                    onEnded={() => setIsPlaying(false)}
-                    onError={(e) => { 
-                        console.error("Audio Source Error:", e);
-                        useNativeSpeech();
-                    }}
-                />
             </div>
 
             {showScript && (
                 <div className="mt-2 p-3 bg-white border border-dashed border-[#CBD5E1] rounded-xl animate-in slide-in-from-top-1 duration-200">
                     <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest mb-1">Transcript:</p>
-                    <p className="text-[13px] text-[#475569] leading-relaxed italic italic font-serif">"{script}"</p>
+                    <p className="text-[13px] text-[#475569] leading-relaxed italic font-serif">"{script}"</p>
                 </div>
             )}
 

@@ -6,6 +6,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 const api = axios.create({
     baseURL: API_URL,
     withCredentials: true, // Crucial for sending/receiving cookies
+    timeout: 120000, // 2 minutes to allow AI grading to finish
 });
 
 api.interceptors.request.use(
