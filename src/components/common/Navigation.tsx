@@ -3,10 +3,10 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  BookOpen, 
-  Settings, 
-  LogOut, 
+import {
+  BookOpen,
+  Settings,
+  LogOut,
   LayoutDashboard,
   MessageSquare,
   FileText,
@@ -47,14 +47,13 @@ export function Sidebar() {
         {navItems.map((item, i) => {
           const active = pathname === item.href;
           return (
-            <Link 
+            <Link
               key={i}
               href={item.href}
-              className={`flex items-center space-x-3 px-4 py-3 rounded-2xl transition-all font-semibold group ${
-                active 
-                  ? 'bg-[#F5F3FF] text-[#8B5CF6] border border-[#C4B5FD]/30 shadow-sm' 
+              className={`flex items-center space-x-3 px-4 py-3 rounded-2xl transition-all font-semibold group ${active
+                  ? 'bg-[#F5F3FF] text-[#8B5CF6] border border-[#C4B5FD]/30 shadow-sm'
                   : 'hover:bg-[#F3F4F6] text-[#6B7280] hover:text-[#1F2937]'
-              }`}
+                }`}
             >
               <item.icon size={20} strokeWidth={active ? 2.5 : 2} className={active ? 'text-[#8B5CF6]' : 'text-[#9CA3AF] group-hover:text-[#6B7280]'} />
               <span>{item.label}</span>
@@ -64,20 +63,20 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-6 border-t border-[#E5E7EB] space-y-2">
-         <button 
+        <button
           onClick={() => router.push('/settings')}
           className="w-full flex items-center space-x-3 px-4 py-3 text-[#6B7280] hover:text-[#1F2937] hover:bg-[#F3F4F6] rounded-2xl transition-all font-medium"
-         >
-           <Settings size={20} strokeWidth={2} className="text-[#9CA3AF]" />
-           <span>Cài đặt</span>
-         </button>
-         <button 
+        >
+          <Settings size={20} strokeWidth={2} className="text-[#9CA3AF]" />
+          <span>Cài đặt</span>
+        </button>
+        <button
           onClick={() => { logout(); router.push('/login'); }}
           className="w-full flex items-center space-x-3 px-4 py-3 text-[#DC2626] hover:bg-[#FEF2F2] rounded-2xl transition-all font-medium"
-         >
-           <LogOut size={20} strokeWidth={2} />
-           <span>Đăng xuất</span>
-         </button>
+        >
+          <LogOut size={20} strokeWidth={2} />
+          <span>Đăng xuất</span>
+        </button>
       </div>
     </aside>
   );
@@ -98,15 +97,15 @@ export function BottomNav() {
       {navItems.map((item, i) => {
         const active = pathname === item.href;
         return (
-          <Link 
-            key={i} 
+          <Link
+            key={i}
             href={item.href}
             className="flex flex-col items-center justify-center transition-all w-12 h-12"
           >
-            <item.icon 
-                size={24} 
-                strokeWidth={active ? 2.5 : 2} 
-                className={active ? 'text-[#8B5CF6]' : 'text-[#8E8E93]'} 
+            <item.icon
+              size={24}
+              strokeWidth={active ? 2.5 : 2}
+              className={active ? 'text-[#8B5CF6]' : 'text-[#8E8E93]'}
             />
             {item.label && <span className={`text-[10px] font-bold mt-1 ${active ? 'text-[#8B5CF6]' : 'text-[#8E8E93]'}`}>{item.label}</span>}
           </Link>

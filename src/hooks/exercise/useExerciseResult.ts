@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import * as exerciseService from '../../services/exerciseService';
-type Question = exerciseService.Question;
+import { Question } from '../../models/Question';
 
 interface ExerciseSessionState {
     userAnswers: Record<string, any>;
