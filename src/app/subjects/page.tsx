@@ -34,10 +34,10 @@ export default function SubjectListPage() {
     return (
         <main className="flex-1 flex flex-col px-5 md:px-8 max-w-7xl mx-auto w-full animate-in fade-in duration-500 bg-[#F9FAFA]">
             {/* Header */}
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-14">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-8 md:pt-14">
                 <div className="space-y-1">
-                    <h1 className="text-2xl font-bold text-[#1F2937] tracking-tight">Tất cả môn học</h1>
-                    <p className="text-[#6B7280] font-medium text-[14px]">Quản lý các khóa học và tài liệu của bạn</p>
+                    <h1 className="text-xl md:text-2xl font-bold text-[#1F2937] tracking-tight text-center md:text-left">Tất cả môn học</h1>
+                    <p className="text-[#6B7280] font-medium text-[13px] md:text-[14px] text-center md:text-left">Quản lý các khóa học và tài liệu của bạn</p>
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -76,8 +76,8 @@ export default function SubjectListPage() {
 
             {/* Grid */}
             {isLoading ? (
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+                    {[1, 2, 3, 4, 5, 6].map(i => (
                         <div key={i} className="aspect-square bg-gray-200/50 animate-pulse rounded-[24px] border border-[#E5E7EB]"></div>
                     ))}
                 </div>
