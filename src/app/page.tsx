@@ -11,7 +11,6 @@ import {
   Settings, 
   LogOut, 
   Search, 
-  Bell, 
   LayoutDashboard,
   MessageSquare,
   FileText,
@@ -50,7 +49,7 @@ export default function Dashboard() {
   return (
     <div className="flex-1 flex flex-col px-5 md:px-8 max-w-7xl mx-auto w-full animate-in fade-in duration-500 pb-20">
       {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 pt-4 md:pt-0">
+      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 pt-10 md:pt-12">
         <div className="space-y-1">
           <p className="text-[#6B7280] font-medium text-[15px]">Xin chào, {user?.firstName} 👋</p>
           <h1 className="text-3xl font-extrabold text-[#1F2937] tracking-tight">Trang tổng quan</h1>
@@ -69,10 +68,6 @@ export default function Dashboard() {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button className="relative p-3 bg-white border border-[#E5E7EB] rounded-2xl hover:bg-[#F9FAFB] transition-all text-[#6B7280] shadow-sm active:scale-95">
-            <Bell size={20} strokeWidth={2} />
-            <span className="absolute top-2.5 right-3 w-2.5 h-2.5 bg-[#DC2626] rounded-full border-2 border-white"></span>
-          </button>
           <div className="hidden md:flex items-center p-1 bg-white border border-[#E5E7EB] rounded-2xl shadow-sm cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => router.push('/profile')}>
              <div className="w-10 h-10 bg-[#8B5CF6] rounded-[14px] flex items-center justify-center text-white font-bold text-sm shadow-inner shadow-white/20">
                 {user?.firstName?.[0]}{user?.lastName?.[0]}

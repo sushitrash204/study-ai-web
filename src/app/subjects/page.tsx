@@ -34,7 +34,7 @@ export default function SubjectListPage() {
     return (
         <main className="flex-1 flex flex-col px-5 md:px-8 max-w-7xl mx-auto w-full animate-in fade-in duration-500 bg-[#F9FAFA]">
             {/* Header */}
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-6">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 pt-14">
                 <div className="space-y-1">
                     <h1 className="text-2xl font-bold text-[#1F2937] tracking-tight">Tất cả môn học</h1>
                     <p className="text-[#6B7280] font-medium text-[14px]">Quản lý các khóa học và tài liệu của bạn</p>

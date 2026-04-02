@@ -27,7 +27,7 @@ export default function SubjectCard({ name, color, onClick, onEdit, onDelete, cl
                 boxShadow: `0 4px 14px ${(color || '#000')}40`
             }}
             className={cn(
-                "group relative aspect-square p-5 md:p-6 rounded-[28px] hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer flex flex-col justify-between overflow-hidden border border-white/10 active:scale-[0.98]",
+                "group relative aspect-[1.4/1] min-h-[190px] p-5 md:p-6 rounded-[28px] hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer flex flex-col justify-between overflow-hidden border border-white/10 active:scale-[0.98]",
                 className
             )}
             onMouseEnter={(e) => {
