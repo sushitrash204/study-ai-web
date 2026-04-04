@@ -20,12 +20,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     isInitializing: true,
 
     initialize: async () => {
+        // Prevent multiple initialization calls
+        if (get().isAuthenticated && !get().isInitializing) return;
+        
         try {
+            set({ isInitializing: true });
             const storedUser = await storage.getItem('user');
-            
+
             if (storedUser) {
                 const user = new User(JSON.parse(storedUser));
-                set({ user, isInitializing: true }); // Keep initializing true until we get a token
+                // Set the cached user and assume authenticated while we verify with server
+                set({ user, isAuthenticated: true }); 
 
                 // Trigger silent refresh via an API call (handled by interceptor or manual call)
                 // We'll import api here dynamically to avoid circular dependencies if needed, 
@@ -33,15 +38,17 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                 const { default: api } = await import('../services/api');
                 try {
                     const res = await api.post('/auth/refresh');
-                    const { accessToken } = res.data;
-                    set({ accessToken, isAuthenticated: true, isInitializing: false });
+                    const { accessToken, user: freshUserData } = res.data;
+                    const user = new User(freshUserData);
+                    set({ user, accessToken, isAuthenticated: true, isInitializing: false });
+                    await storage.setItem('user', JSON.stringify(user));
                 } catch (err) {
                     // Refresh failed (cookie expired or invalid)
                     set({ user: null, accessToken: null, isAuthenticated: false, isInitializing: false });
                     await storage.removeItem('user');
                 }
             } else {
-                 set({ isInitializing: false });
+                set({ isInitializing: false });
             }
         } catch (error) {
             console.error('Error loading auth from storage', error);
@@ -56,7 +63,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             isAuthenticated: true
         });
         await storage.setItem('user', JSON.stringify(user));
-        // Note: accessToken is NOT saved to storage
     },
 
     updateUser: async (user) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, Save, Palette, Type, Loader2 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -17,10 +17,13 @@ const PRESET_COLORS = [
 interface SubjectEditModalProps {
     visible: boolean;
     onClose: () => void;
-    onSave: (name: string, color: string) => Promise<boolean>;
+    onSave: (name: string, color: string, classId: string | null) => Promise<boolean>;
     initialName?: string;
     initialColor?: string;
+    initialClassId?: string | null;
+    classes: { id: string, name: string }[];
     title?: string;
+    allowClassSelection?: boolean;
 }
 
 export default function SubjectEditModal({ 
@@ -29,25 +32,22 @@ export default function SubjectEditModal({
     onSave, 
     initialName = '', 
     initialColor = '#8B5CF6',
-    title = 'Thêm môn học mới'
+    initialClassId = null,
+    classes = [],
+    title = 'Thêm môn học mới',
+    allowClassSelection = true
 }: SubjectEditModalProps) {
     const [name, setName] = useState(initialName);
     const [color, setColor] = useState(initialColor);
+    const [classId, setClassId] = useState<string | null>(initialClassId);
     const [loading, setLoading] = useState(false);
-
-    useEffect(() => {
-        if (visible) {
-            setName(initialName);
-            setColor(initialColor);
-        }
-    }, [visible, initialName, initialColor]);
 
     if (!visible) return null;
 
     const handleSave = async () => {
         if (!name.trim()) return;
         setLoading(true);
-        const success = await onSave(name, color);
+        const success = await onSave(name, color, classId);
         setLoading(false);
         if (success) onClose();
     };
@@ -76,6 +76,24 @@ export default function SubjectEditModal({
                             autoFocus
                         />
                     </div>
+
+                    {allowClassSelection && (
+                        <div className="space-y-2">
+                            <label className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-widest px-1 flex items-center">
+                                Chọn khối lớp
+                            </label>
+                            <select
+                                value={classId || ''}
+                                onChange={(e) => setClassId(e.target.value || null)}
+                                className="w-full bg-[#F9FAFB] border border-[#E5E7EB] text-[#1F2937] px-5 py-4 rounded-2xl focus:ring-2 focus:ring-[#8B5CF6]/50 focus:border-[#8B5CF6] outline-none transition-all font-medium appearance-none"
+                            >
+                                <option value="">Không thuộc lớp nào (Cá nhân)</option>
+                                {classes.map((cls) => (
+                                    <option key={cls.id} value={cls.id}>{cls.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     <div className="space-y-3">
                         <label className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-widest px-1 flex items-center">

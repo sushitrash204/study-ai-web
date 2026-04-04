@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useChat } from './useChat';
-import { useSubject } from '../subject/useSubject';
+import { useSubjects } from '../subject/useSubjects';
 import { useDocument } from '../library/useDocument';
 
 interface ChatRouteParams {
@@ -19,7 +19,7 @@ export const useChatSession = (routeParams: ChatRouteParams) => {
     const { messages, activeDocument, isSummarizing, isReplying } = chatState;
     
     // Default hooks stay idle until manual fetch
-    const { state: { subjects, isLoading: loadingSubjects }, actions: subjectActions } = useSubject();
+    const { state: { subjects, isLoading: loadingSubjects }, actions: subjectActions } = useSubjects();
     const { state: { documents, isLoading: loadingDocuments }, actions: documentActions } = useDocument();
 
     const handledRequestRef = useRef<string | null>(null);
@@ -29,7 +29,7 @@ export const useChatSession = (routeParams: ChatRouteParams) => {
 
     const openDocumentPicker = useCallback(async () => {
         setPickerVisible(true);
-        await subjectActions.fetchSubjects();
+        await subjectActions.fetchAll();
         await documentActions.fetchDocuments();
     }, [subjectActions, documentActions]);
 

@@ -1,82 +1,71 @@
-'use client';
-
 import React from 'react';
-import { BookOpen, Edit3, Trash2, ChevronRight } from 'lucide-react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-function cn(...inputs: ClassValue[]) {
-    return twMerge(clsx(inputs));
-}
+import { BookOpen, ArrowRight, Sparkles } from 'lucide-react';
 
 interface SubjectCardProps {
     name: string;
-    color: string;
-    onClick: () => void;
-    onEdit?: (e: React.MouseEvent) => void;
-    onDelete?: (e: React.MouseEvent) => void;
-    className?: string;
+    className?: string; // Tên lớp (Ví dụ: Lớp 10)
+    color?: string;
+    onClick?: () => void;
 }
 
-export default function SubjectCard({ name, color, onClick, onEdit, onDelete, className }: SubjectCardProps) {
+const SubjectCard: React.FC<SubjectCardProps> = ({ name, className, color = '#6366f1', onClick }) => {
+    // Tạo gradient từ màu chủ đạo
+    const gradientStyle = {
+        background: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
+    };
+
     return (
-        <div 
+        <div
             onClick={onClick}
-            style={{ 
-                backgroundColor: color,
-                boxShadow: `0 4px 14px ${(color || '#000')}40`
-            }}
-            className={cn(
-                "group relative aspect-square md:aspect-[1.4/1] md:min-h-[190px] p-4 md:p-6 rounded-[24px] md:rounded-[28px] hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer flex flex-col justify-between overflow-hidden border border-white/10 active:scale-[0.98]",
-                className
-            )}
-            onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = `0 20px 40px ${(color || '#000')}60`;
-            }}
-            onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = `0 4px 14px ${(color || '#000')}40`;
-            }}
+            className="group relative h-44 rounded-[28px] overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] bg-white border border-gray-100"
         >
-            {/* Decorative elements */}
-            <div className="absolute top-0 right-0 p-8 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-125 group-hover:-rotate-6 transition-all duration-700 ease-out">
-                <BookOpen size={120} />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/10 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div className="flex items-center justify-between relative z-10 w-full">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-md rounded-[14px] md:rounded-[18px] flex items-center justify-center text-white border border-white/40 shadow-[0_8px_16px_rgba(0,0,0,0.1)] group-hover:animate-float">
-                    <BookOpen className="w-5 h-5 md:w-6 md:h-6" strokeWidth={2.5} />
-                </div>
-                {(onEdit || onDelete) && (
-                    <div className="flex space-x-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform md:-translate-y-2 md:group-hover:translate-y-0">
-                        {onEdit && (
-                            <button 
-                                onClick={(e) => { e.stopPropagation(); onEdit(e); }}
-                                className="w-9 h-9 flex items-center justify-center bg-white/30 backdrop-blur-md rounded-full text-white hover:bg-white transition-all shadow-sm hover:text-gray-800 active:scale-90"
-                            >
-                                <Edit3 size={15} strokeWidth={2.5} />
-                            </button>
-                        )}
-                        {onDelete && (
-                            <button 
-                                onClick={(e) => { e.stopPropagation(); onDelete(e); }}
-                                className="w-9 h-9 flex items-center justify-center bg-white/30 backdrop-blur-md rounded-full text-white hover:bg-red-500 transition-all shadow-sm active:scale-90"
-                            >
-                                <Trash2 size={15} />
-                            </button>
+            {/* Background Content */}
+            <div 
+                className="absolute inset-0 opacity-100 transition-all duration-500 group-hover:scale-110" 
+                style={gradientStyle} 
+            />
+
+            {/* Pattern Overlay */}
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+
+            {/* Content Container */}
+            <div className="relative h-full p-6 flex flex-col justify-between text-white z-10">
+                <div className="flex justify-between items-start">
+                    <div className="flex flex-col gap-1">
+                        <div className="bg-white/20 backdrop-blur-md p-2.5 rounded-2xl border border-white/30 shadow-inner group-hover:rotate-[15deg] transition-transform duration-500 w-fit">
+                            <BookOpen size={20} strokeWidth={2.5} />
+                        </div>
+                        {className && (
+                            <span className="mt-2 px-2 py-0.5 bg-black/20 backdrop-blur-md rounded-full text-[9px] font-black uppercase tracking-wider border border-white/10">
+                                {className}
+                            </span>
                         )}
                     </div>
-                )}
-            </div>
-            
-            <div className="relative z-10 w-full transform group-hover:translate-x-1 transition-transform duration-300">
-                <h4 className="text-[16px] md:text-[22px] font-extrabold text-white leading-tight drop-shadow-md line-clamp-2">{name}</h4>
-                <div className="flex items-center mt-3 text-white/90 font-bold uppercase tracking-[0.15em] text-[10px]">
-                    <span>Khóa học tích cực</span>
-                    <ChevronRight size={14} className="ml-1 transform group-hover:translate-x-1 transition-transform" />
+                    <div className="opacity-0 group-hover:opacity-100 transition-all duration-500 translate-x-4 group-hover:translate-x-0">
+                        <Sparkles size={16} className="text-white/80" />
+                    </div>
+                </div>
+
+                <div className="space-y-1.5">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Chương trình học</p>
+                    <h3 className="text-xl font-black leading-tight tracking-tight drop-shadow-sm group-hover:scale-[1.02] transition-transform origin-left">{name}</h3>
+                    
+                    <div className="flex items-center gap-1.5 pt-2 opacity-0 group-hover:opacity-100 transition-all duration-500 translate-y-4 group-hover:translate-y-0">
+                        <span className="text-[11px] font-black uppercase tracking-wider">Khám phá ngay</span>
+                        <ArrowRight size={14} strokeWidth={3} />
+                    </div>
                 </div>
             </div>
-        </div>
 
+            {/* Decorative Watermark */}
+            <div className="absolute -bottom-6 -right-6 opacity-10 transform -rotate-12 group-hover:rotate-0 transition-all duration-700 pointer-events-none">
+                <BookOpen size={120} strokeWidth={1} />
+            </div>
+
+            {/* Bottom Glow Effect */}
+            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        </div>
     );
-}
+};
+
+export default SubjectCard;

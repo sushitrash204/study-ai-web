@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 
 export interface UserStats {
     totalSubjects: number;
+    mySubjects: number;
     totalDocuments: number;
     totalExercises: number;
     completedExercises: number;
@@ -13,6 +14,7 @@ export function useStats() {
     const { isAuthenticated } = useAuthStore();
     const [stats, setStats] = useState<UserStats>({
         totalSubjects: 0,
+        mySubjects: 0,
         totalDocuments: 0,
         totalExercises: 0,
         completedExercises: 0

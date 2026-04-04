@@ -1,184 +1,156 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
-import { useSubject } from '@/hooks/subject/useSubject';
 import { useStats } from '@/hooks/stats/useStats';
-import { 
-  BookOpen, 
-  Plus, 
-  Settings, 
-  LogOut, 
-  Search, 
-  LayoutDashboard,
-  MessageSquare,
-  FileText,
-  User as UserIcon,
-  ChevronRight,
-  Target
+import {
+   BookOpen,
+   ChevronRight,
+   FileText,
+   Target,
+   Sparkles,
+   User
 } from 'lucide-react';
-import Link from 'next/link';
-import SubjectCard from '@/components/subject/SubjectCard';
 
 export default function Dashboard() {
-  const { user, isAuthenticated, logout, isInitializing } = useAuthStore();
-  const router = useRouter();
-  const { state: { subjects, isLoading }, actions } = useSubject({ autoFetch: isAuthenticated });
-  const { stats, isLoading: isStatsLoading } = useStats();
-  const [searchQuery, setSearchQuery] = useState('');
+   const { user, isAuthenticated, isInitializing } = useAuthStore();
+   const router = useRouter();
+   const { stats, isLoading: isStatsLoading } = useStats();
 
-  useEffect(() => {
-    if (!isInitializing && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [isAuthenticated, isInitializing, router]);
+   useEffect(() => {
+      if (!isInitializing && !isAuthenticated) {
+         router.push('/login');
+      }
+   }, [isAuthenticated, isInitializing, router]);
 
-  if (isInitializing || !isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-[#F9FAFA] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#8B5CF6]"></div>
+   if (isInitializing || !isAuthenticated) {
+      return (
+         <div className="min-h-screen flex items-center justify-center bg-gray-50">
+            <div className="flex flex-col items-center gap-4">
+               <div className="w-12 h-12 border-4 border-violet-600 border-t-transparent rounded-full animate-spin"></div>
+               <p className="text-gray-500 font-medium">Đang tải dữ liệu...</p>
+            </div>
+         </div>
+      );
+   }
+
+   return (
+      <div className="min-h-screen bg-[#F9FAFA] p-4 md:p-8 pt-28">
+         <header className="max-w-6xl mx-auto mb-12">
+            <div className="flex items-center gap-4 mb-2">
+               <div className="p-2 bg-violet-100 rounded-xl">
+                  <Sparkles size={20} className="text-violet-600" />
+               </div>
+               <p className="text-violet-600 font-black text-xs uppercase tracking-[0.2em]">Bảng điều khiển học tập</p>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
+               Chào bạn, {user?.firstName}! <span className="animate-bounce inline-block">👋</span>
+            </h1>
+            <p className="text-gray-500 font-bold mt-2 text-lg">Bạn đang có kết quả học tập rất tốt, hãy tiếp tục nhé!</p>
+         </header>
+
+         {/* Main Stats Grid */}
+         <section className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+            {/* Total Subjects Card */}
+            <div
+               onClick={() => router.push('/subjects')}
+               className="p-10 rounded-[48px] bg-[#8B5CF6] shadow-[0_20px_40px_rgba(139,92,246,0.25)] hover:shadow-[0_30px_60px_rgba(139,92,246,0.35)] relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 cursor-pointer"
+            >
+               <div className="absolute top-0 right-0 p-8 transform translate-x-6 -translate-y-6 opacity-10 group-hover:scale-125 group-hover:rotate-6 transition-all duration-700 ease-out">
+                  <BookOpen size={160} />
+               </div>
+               <div className="relative z-10 space-y-6">
+                  <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                     <BookOpen size={28} className="text-white" />
+                  </div>
+                  <div className="space-y-1">
+                     <p className="text-white/80 font-black uppercase tracking-widest text-[11px]">Tổng số môn học</p>
+                     <h3 className="text-6xl font-black text-white">{isStatsLoading ? '—' : stats.totalSubjects}</h3>
+                  </div>
+                  <div className="flex items-center text-white/90 text-sm font-black pt-4">
+                     <span>Mở thư viện môn học</span>
+                     <ChevronRight size={18} className="ml-1 transform group-hover:translate-x-2 transition-transform" />
+                  </div>
+               </div>
+            </div>
+
+            {/* My Subjects Card */}
+            <div
+               onClick={() => router.push('/subjects')}
+               className="p-10 rounded-[48px] bg-white border-2 border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 cursor-pointer"
+            >
+               <div className="relative z-10 space-y-6">
+                  <div className="w-14 h-14 bg-violet-50 rounded-2xl flex items-center justify-center">
+                     <User size={28} className="text-violet-600" />
+                  </div>
+                  <div className="space-y-1">
+                     <p className="text-gray-400 font-black uppercase tracking-widest text-[11px]">Môn học của bạn</p>
+                     <h3 className="text-6xl font-black text-gray-900">{isStatsLoading ? '—' : stats.mySubjects}</h3>
+                  </div>
+                  <div className="flex items-center text-violet-600 text-sm font-black pt-4">
+                     <span>Xem môn cá nhân</span>
+                     <ChevronRight size={18} className="ml-1 transform group-hover:translate-x-2 transition-transform" />
+                  </div>
+               </div>
+            </div>
+
+            {/* Total Documents Card */}
+            <div
+               onClick={() => router.push('/documents')}
+               className="p-10 rounded-[48px] bg-white border-2 border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 cursor-pointer"
+            >
+               <div className="relative z-10 space-y-6">
+                  <div className="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center">
+                     <FileText size={28} className="text-blue-500" />
+                  </div>
+                  <div className="space-y-1">
+                     <p className="text-gray-400 font-black uppercase tracking-widest text-[11px]">Tài liệu đã tải</p>
+                     <h3 className="text-6xl font-black text-gray-900">{isStatsLoading ? '—' : stats.totalDocuments}</h3>
+                  </div>
+                  <div className="flex items-center text-blue-600 text-sm font-black pt-4">
+                     <span>Xem tài liệu của tôi</span>
+                     <ChevronRight size={18} className="ml-1 transform group-hover:translate-x-2 transition-transform" />
+                  </div>
+               </div>
+            </div>
+
+            {/* Total Exercises Card */}
+            <div
+               onClick={() => router.push('/exercises')}
+               className="p-10 rounded-[48px] bg-white border-2 border-gray-100 shadow-[0_8px_30px_rgba(0,0,0,0.02)] hover:shadow-[0_40px_80px_rgba(0,0,0,0.08)] relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 cursor-pointer"
+            >
+               <div className="relative z-10 space-y-6">
+                  <div className="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center">
+                     <Target size={28} className="text-emerald-500" />
+                  </div>
+                  <div className="space-y-1">
+                     <p className="text-gray-400 font-black uppercase tracking-widest text-[11px]">Bài luyện tập</p>
+                     <h3 className="text-6xl font-black text-gray-900">{isStatsLoading ? '—' : stats.totalExercises}</h3>
+                  </div>
+                  <div className="flex items-center text-emerald-600 text-sm font-black pt-4">
+                     <span>Luyện tập ngay</span>
+                     <ChevronRight size={18} className="ml-1 transform group-hover:translate-x-2 transition-transform" />
+                  </div>
+               </div>
+            </div>
+         </section>
+
+         {/* Subtle Bottom Section */}
+         <section className="max-w-6xl mx-auto mt-20 p-8 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+               <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                  <Sparkles size={24} className="text-amber-500" />
+               </div>
+               <div>
+                  <h4 className="font-black text-gray-800 text-lg">Hệ thống AI Study Hub</h4>
+                  <p className="text-gray-500 font-bold text-sm">Hỗ trợ bạn tối ưu hóa việc học tập mọi lúc mọi nơi.</p>
+               </div>
+            </div>
+            <button onClick={() => router.push('/subjects')} className="px-8 py-4 bg-gray-900 text-white rounded-2xl font-black hover:bg-black transition-all active:scale-95 shadow-xl">
+               Bắt đầu học ngay
+            </button>
+         </section>
       </div>
-    );
-  }
-
-  const filteredSubjects = subjects.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  return (
-    <div className="flex-1 flex flex-col px-5 md:px-8 max-w-7xl mx-auto w-full animate-in fade-in duration-500 pb-20">
-      {/* Header */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 pt-10 md:pt-12">
-        <div className="space-y-1">
-          <p className="text-[#6B7280] font-medium text-[15px]">Xin chào, {user?.firstName} 👋</p>
-          <h1 className="text-3xl font-extrabold text-[#1F2937] tracking-tight">Trang tổng quan</h1>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <div className="relative flex-1 md:w-80 group">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#8E8E93] transition-colors">
-              <Search size={18} strokeWidth={2.5} />
-            </div>
-            <input
-              type="text"
-              placeholder="Tìm kiếm môn học..."
-              className="w-full bg-[#F2F2F7] border border-[#E5E7EB] text-[#1F2937] pl-11 pr-4 py-3 rounded-2xl focus:ring-2 focus:ring-[#8B5CF6]/50 focus:border-[#8B5CF6] outline-none transition-all font-medium placeholder:text-[#8E8E93]"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-          <div className="hidden md:flex items-center p-1 bg-white border border-[#E5E7EB] rounded-2xl shadow-sm cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => router.push('/profile')}>
-             <div className="w-10 h-10 bg-[#8B5CF6] rounded-[14px] flex items-center justify-center text-white font-bold text-sm shadow-inner shadow-white/20">
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-             </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Stats Section */}
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-         <div className="p-6 md:p-8 rounded-[28px] bg-[#8B5CF6] shadow-[0_4px_14px_rgba(139,92,246,0.3)] hover:shadow-[0_20px_40px_rgba(139,92,246,0.5)] relative overflow-hidden group hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer active:scale-[0.98]" onClick={() => router.push('/subjects')}>
-            <div className="absolute top-0 right-0 p-8 transform translate-x-4 -translate-y-4 opacity-10 group-hover:scale-125 group-hover:-rotate-6 transition-all duration-700 ease-out">
-               <BookOpen size={120} />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-black/10 opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
-            
-            <div className="relative z-10 space-y-3 transform group-hover:translate-x-1 transition-transform duration-300">
-               <p className="text-white/80 font-extrabold uppercase tracking-widest text-[11px] mb-1">Tổng số môn học</p>
-               <h3 className="text-[44px] leading-none font-black text-white drop-shadow-md">{isStatsLoading ? '—' : stats.totalSubjects}</h3>
-               <div className="flex items-center text-white/90 text-sm font-semibold pt-3">
-                  <span>Xem chi tiết</span>
-                  <ChevronRight size={16} strokeWidth={2.5} className="ml-0.5 transform group-hover:translate-x-1 transition-transform" />
-               </div>
-            </div>
-         </div>
-         
-         <div className="p-6 md:p-8 rounded-[28px] bg-white border border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(139,92,246,0.15)] relative overflow-hidden group hover:border-[#8B5CF6]/40 hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer active:scale-[0.98]" onClick={() => router.push('/documents')}>
-            <div className="absolute top-0 right-0 p-8 transform translate-x-4 -translate-y-4 opacity-[0.03] group-hover:text-[#8B5CF6] group-hover:opacity-10 group-hover:scale-125 group-hover:-rotate-6 transition-all duration-700 ease-out">
-               <FileText size={120} />
-            </div>
-            <div className="relative z-10 space-y-3 transform group-hover:translate-x-1 transition-transform duration-300">
-               <p className="text-[#6B7280] font-extrabold uppercase tracking-widest text-[11px] mb-1">Thư viện tài liệu</p>
-               <h3 className="text-[44px] leading-none font-black text-[#1F2937]">{isStatsLoading ? '—' : stats.totalDocuments}</h3>
-               <div className="flex items-center text-[#8B5CF6] text-sm font-semibold pt-3">
-                  <span>Xem tài liệu</span>
-                  <ChevronRight size={16} strokeWidth={2.5} className="ml-0.5 transform group-hover:translate-x-1 transition-transform" />
-               </div>
-            </div>
-         </div>
-
-         <div className="p-6 md:p-8 rounded-[28px] bg-white border border-[#E5E7EB] shadow-[0_4px_12px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(16,185,129,0.15)] relative overflow-hidden group hover:border-[#10B981]/40 hover:-translate-y-2 transition-all duration-500 ease-out cursor-pointer active:scale-[0.98]" onClick={() => router.push('/subjects')}>
-         <div className="absolute top-0 right-0 p-8 transform translate-x-4 -translate-y-4 opacity-[0.03] group-hover:text-[#10B981] group-hover:opacity-10 group-hover:scale-125 group-hover:-rotate-6 transition-all duration-700 ease-out">
-               <Target size={120} />
-            </div>
-            <div className="relative z-10 space-y-3 transform group-hover:translate-x-1 transition-transform duration-300">
-               <p className="text-[#6B7280] font-extrabold uppercase tracking-widest text-[11px] mb-1">Bài tập của tôi</p>
-               <h3 className="text-[44px] leading-none font-black text-[#1F2937]">{isStatsLoading ? '—' : stats.totalExercises}</h3>
-               <div className="flex items-center text-[#10B981] text-sm font-semibold pt-3">
-                  <span>Luyện tập ngay</span>
-                  <ChevronRight size={16} strokeWidth={2.5} className="ml-0.5 transform group-hover:translate-x-1 transition-transform" />
-               </div>
-            </div>
-         </div>
-      </section>
-
-      {/* Subjects Section */}
-      <section className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[20px] font-extrabold text-[#1F2937] tracking-tight">Môn học của bạn</h3>
-          <div className="flex items-center space-x-2">
-            <button 
-              onClick={() => router.push('/documents')}
-              className="flex items-center space-x-1.5 px-3 md:px-4 py-2 bg-white border border-[#E5E7EB] hover:border-[#8B5CF6]/50 text-[#4B5563] hover:text-[#8B5CF6] rounded-[14px] transition-all shadow-sm active:scale-95"
-            >
-              <FileText size={18} strokeWidth={2.5} />
-              <span className="font-bold text-sm hidden sm:inline">Tài liệu</span>
-            </button>
-            <button 
-              onClick={() => router.push('/subjects')}
-              className="flex items-center space-x-1.5 px-3 md:px-4 py-2 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-[14px] transition-all shadow-[0_4px_12px_rgba(139,92,246,0.3)] active:scale-95"
-            >
-              <Plus size={18} strokeWidth={2.5} />
-              <span className="font-bold text-sm">Thêm môn</span>
-            </button>
-          </div>
-        </div>
-
-        {isLoading ? (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map(i => (
-              <div key={i} className="aspect-square bg-gray-200/50 animate-pulse rounded-[24px] border border-[#E5E7EB]"></div>
-            ))}
-          </div>
-        ) : subjects.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 bg-white border-2 border-dashed border-[#E5E7EB] rounded-[32px]">
-            <div className="w-16 h-16 bg-[#F5F3FF] rounded-2xl flex items-center justify-center mb-4">
-               <BookOpen size={32} className="text-[#8B5CF6]" strokeWidth={1.5} />
-            </div>
-            <h4 className="text-[17px] font-bold text-[#1F2937] mb-1">Chưa có môn học nào</h4>
-            <p className="text-[#6B7280] font-medium text-sm text-center px-4 max-w-sm">Hãy tạo môn học đầu tiên để bắt đầu lưu trữ tài liệu và luyện tập cùng AI nhé.</p>
-            <button 
-              onClick={() => router.push('/subjects')}
-              className="mt-6 px-6 py-3 bg-[#8B5CF6] text-white font-bold rounded-2xl shadow-[0_4px_12px_rgba(139,92,246,0.3)] hover:bg-[#7C3AED] transition-all"
-            >
-              Bắt đầu thêm mới
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            {filteredSubjects.map((subject) => (
-              <SubjectCard
-                key={subject.id}
-                name={subject.name}
-                color={subject.color}
-                onClick={() => router.push(`/subjects/${subject.id}`)}
-                onEdit={() => router.push(`/subjects/${subject.id}`)}
-              />
-            ))}
-          </div>
-        )}
-      </section>
-    </div>
-  );
+   );
 }

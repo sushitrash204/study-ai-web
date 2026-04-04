@@ -65,7 +65,7 @@ function ChatContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row h-[calc(100vh-calc(76px+env(safe-area-inset-bottom)))] md:h-screen overflow-hidden font-sans">
+    <div className="flex-1 flex flex-col md:flex-row h-screen min-h-0 max-h-screen overflow-hidden font-sans relative">
       {/* Sidebar - Desktop (Thread Context) */}
       <aside className={cn(
         "hidden md:flex bg-white border-r border-[#E5E7EB] flex-col overflow-hidden shadow-sm z-10 shrink-0 transition-all duration-300 ease-in-out",

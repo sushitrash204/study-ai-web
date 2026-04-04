@@ -3,6 +3,9 @@ export class Subject {
     name: string;
     color: string;
     userId: string;
+    classId: string | null;
+    class?: { id: string; name: string };
+    status: 'PRIVATE' | 'DRAFT' | 'PUBLIC';
     createdAt?: string;
     updatedAt?: string;
 
@@ -11,6 +14,9 @@ export class Subject {
         this.name = data?.name || '';
         this.color = data?.color || '#000000';
         this.userId = data?.userId || '';
+        this.classId = data?.classId || null;
+        this.class = data?.class || undefined;
+        this.status = data?.status || 'PRIVATE';
         this.createdAt = data?.createdAt;
         this.updatedAt = data?.updatedAt;
     }

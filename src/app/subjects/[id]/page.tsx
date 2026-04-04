@@ -3,7 +3,7 @@
 import React, { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSubjectDetail } from '@/hooks/subject/useSubjectDetail';
-import { useSubject } from '@/hooks/subject/useSubject';
+import { useSubjects } from '@/hooks/subject/useSubjects';
 import { ExerciseCard } from '@/components/subject/ExerciseCard';
 import GenerateExerciseModal from '@/components/library/GenerateExerciseModal';
 import { 
@@ -27,7 +27,7 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
     const { id } = use(params);
     const router = useRouter();
 
-    const { state: subState, actions: subActions } = useSubject();
+    const { state: subState, actions: subActions } = useSubjects();
     const subject = subState.subjects.find(s => s.id === id);
     const subjectName = subject?.name || 'Chi tiết môn học';
     const subjectColor = subject?.color || '#8B5CF6';
@@ -41,12 +41,12 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
         if (choice) {
             const newName = window.prompt('Nhập tên mới cho môn học:', subjectName);
             if (newName && newName !== subjectName) {
-                subActions.handleSaveSubject(newName, subjectColor, subject);
+                subActions.handleSave(newName, subjectColor, null, subject);
             }
         } else {
             const reallyDelete = window.confirm(`Bạn có chắc chắn muốn xóa môn "${subjectName}" không?`);
             if (reallyDelete) {
-                subActions.handleDeleteSubject(subject).then(success => {
+                subActions.handleDelete(subject).then(success => {
                     if (success) router.push('/');
                 });
             }

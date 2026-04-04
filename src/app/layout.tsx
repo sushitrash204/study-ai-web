@@ -27,8 +27,12 @@ export default function RootLayout({
       lang="en"
       className={`${nunito.variable} h-full antialiased font-sans`}
       style={{ colorScheme: 'light' }}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[#F9FAFA] text-[#1F2937] overflow-x-hidden">
+      <body 
+        className="min-h-full flex flex-col bg-[#F9FAFA] text-[#1F2937] overflow-x-hidden"
+        suppressHydrationWarning
+      >
         <MainLayout>
           {children}
         </MainLayout>
