@@ -29,7 +29,7 @@ export function AdminSidebar() {
   const navItems: NavItem[] = [
     { icon: LayoutDashboard, label: 'Tổng quan', href: '/admin' },
     { icon: GraduationCap, label: 'Khối lớp', href: '/admin/classes' },
-    { icon: BookOpen, label: 'Môn hệ thống', href: '/admin/subjects' },
+    { icon: BookOpen, label: 'Môn học', href: '/admin/subjects' },
     { icon: BookMarked, label: 'Bài học', href: '/admin/lessons' },
     { icon: Users, label: 'Người dùng', href: '/admin/users' },
   ];
