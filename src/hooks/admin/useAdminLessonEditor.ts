@@ -15,6 +15,7 @@ import {
   generateLessonBlocksFromPdf,
   uploadLessonImage,
   createAdminManualExercise,
+  updateAdminManualExercise,
 } from '@/services/adminService';
 import type { AdminManualExercisePayload, LessonBlock } from '@/models/adminApi';
 import { getDocumentsBySubject, uploadDocument, deleteDocument } from '@/services/documentService';
@@ -379,6 +380,24 @@ export const useAdminLessonEditor = ({ id, isCreateMode }: { id: string; isCreat
     }
   };
 
+  const updateManualPracticeExercise = async (exerciseId: string, payload: Omit<AdminManualExercisePayload, 'lessonId'>): Promise<boolean> => {
+    if (isCreateMode) return false;
+    setCreatingPractice(true);
+    try {
+      await updateAdminManualExercise(exerciseId, {
+        ...payload,
+        lessonId: id,
+      });
+      await refreshRelatedContent(form.subjectId);
+      return true;
+    } catch (error: any) {
+      window.alert(error?.response?.data?.message || 'Không thể cập nhật bài luyện tập.');
+      return false;
+    } finally {
+      setCreatingPractice(false);
+    }
+  };
+
   const handleDeleteExercise = async (exerciseId: string) => {
     if (!window.confirm('Bạn có chắc chắn muốn xóa bài luyện tập này?')) return;
     try {
@@ -427,6 +446,7 @@ export const useAdminLessonEditor = ({ id, isCreateMode }: { id: string; isCreat
       uploadReferenceDocument,
       uploadReferenceDocuments,
       createManualPracticeExercise,
+      updateManualPracticeExercise,
       handleDeleteExercise,
       handleDeleteDocument,
     },

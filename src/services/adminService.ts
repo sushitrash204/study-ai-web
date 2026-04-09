@@ -113,6 +113,11 @@ export const createAdminManualExercise = async (payload: AdminManualExercisePayl
     return response.data;
 };
 
+export const updateAdminManualExercise = async (id: string, payload: AdminManualExercisePayload) => {
+    const response = await api.put(`/admin/exercises/manual/${id}`, payload);
+    return response.data;
+};
+
 export const generateLessonBlocksFromPdf = async (file: File, titleHint?: string): Promise<LessonBlock[]> => {
     const formData = new FormData();
     formData.append('file', file);

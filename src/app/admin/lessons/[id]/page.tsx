@@ -25,6 +25,7 @@ import {
   BookOpen,
   Link2,
   RefreshCcw,
+  Pencil,
   X,
 } from 'lucide-react';
 import {
@@ -232,6 +233,20 @@ const buildContentWithAudioTag = (content: string, hasAudio: boolean, audioLang:
 
 const canQuestionUseAudio = (questionType: PracticeQuestionType): boolean => {
   return questionType !== 'ESSAY';
+};
+
+const AUDIO_TAG_PATTERN = /^\[AUDIO:([a-z-]{2,10})\]([\s\S]*?)\[\/AUDIO\]\n?/i;
+
+const parseAudioFromContent = (content: string): { script: string, lang: string, remaining: string } => {
+  const match = content.match(AUDIO_TAG_PATTERN);
+  if (!match) {
+    return { script: '', lang: 'en', remaining: content };
+  }
+  return {
+    lang: match[1],
+    script: match[2],
+    remaining: content.replace(AUDIO_TAG_PATTERN, ''),
+  };
 };
 
 const getPublishStatusLabel = (status?: string): string => {
@@ -509,6 +524,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
     refreshRelatedContent,
     uploadReferenceDocuments,
     createManualPracticeExercise,
+    updateManualPracticeExercise,
     handleDeleteExercise,
     handleDeleteDocument,
   } = actions;
@@ -519,6 +535,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
   const [isReferenceModalOpen, setIsReferenceModalOpen] = useState(false);
   const [selectedReferenceFiles, setSelectedReferenceFiles] = useState<File[]>([]);
   const [isPracticeModalOpen, setIsPracticeModalOpen] = useState(false);
+  const [editingExerciseId, setEditingExerciseId] = useState<string | null>(null);
   const [practiceTitle, setPracticeTitle] = useState('');
   const [practiceDescription, setPracticeDescription] = useState('');
   const [practiceType, setPracticeType] = useState<ExerciseDraftType>('QUIZ');
@@ -762,7 +779,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
           )}
 
           {activeTab === 'PRACTICE' && (
-            <div className="bg-white border border-[#E5E7EB] rounded-3xl p-5 space-y-4 flex-1 min-h-0 overflow-y-auto">
+          <div className="bg-white border border-[#E5E7EB] rounded-3xl p-5 space-y-4 flex-1 min-h-0 overflow-y-auto">
               {isCreateMode ? (
                 <p className="text-sm text-[#6B7280] font-medium">Lưu bài học trước để quản lý bài luyện tập theo lesson.</p>
               ) : referencesLoading ? (
@@ -774,6 +791,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                       type="button"
                       disabled={creatingPractice}
                       onClick={() => {
+                        setEditingExerciseId(null);
                         setPracticeTitle('');
                         setPracticeDescription('');
                         setPracticeType('QUIZ');
@@ -799,20 +817,74 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                     <div className="space-y-2">
                       {practiceExercises.map((exercise) => (
                         <div key={exercise.id} className="p-3 rounded-xl border border-[#E5E7EB] flex items-center justify-between group/ex">
-                          <div>
+                          <div className="flex-1">
                             <p className="text-sm font-bold text-[#1F2937]">{exercise.title}</p>
                             <p className="text-xs text-[#6B7280] font-medium">
                               {exercise.type === 'QUIZ' ? 'Trắc nghiệm' : exercise.type === 'ESSAY' ? 'Tự luận' : 'Tổng hợp'} • {getPublishStatusLabel(exercise.publishStatus)}
                             </p>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteExercise(exercise.id)}
-                            className="p-2 text-[#EF4444] hover:bg-[#FEF2F2] rounded-lg opacity-100 xl:opacity-0 group-hover/ex:opacity-100 transition-opacity"
-                            title="Xóa bài tập"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          <div className="flex items-center gap-1 opacity-100 xl:opacity-0 group-hover/ex:opacity-100 transition-opacity">
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                try {
+                                  const { getExerciseDetail } = await import('@/services/exerciseService');
+                                  const detail = await getExerciseDetail(exercise.id);
+                                  setEditingExerciseId(detail.id);
+                                  setPracticeTitle(detail.title);
+                                  setPracticeDescription(detail.description || '');
+                                  setPracticeType(detail.type);
+                                  setPracticeDifficulty(detail.difficulty || null);
+                                  setPracticePublishStatus(detail.publishStatus === 'PRIVATE' ? 'DRAFT' : (detail.publishStatus || 'DRAFT'));
+                                  
+                                  const draftQuestions = (detail.questions || []).map((q: any) => {
+                                    const { script, lang, remaining } = parseAudioFromContent(q.content);
+                                    let optionsText = '';
+                                    let correctAnswerText = '';
+
+                                    if (q.type === 'MULTIPLE_CHOICE') {
+                                      optionsText = (q.options || []).join('\n');
+                                      correctAnswerText = q.correctAnswer;
+                                    } else if (q.type === 'CLOZE_MCQ') {
+                                      optionsText = serializeClozeRows(q.options || []);
+                                      correctAnswerText = serializeAnswers(q.correctAnswer || []);
+                                    } else if (q.type === 'CLOZE_TEXT') {
+                                      correctAnswerText = serializeAnswers(q.correctAnswer || []);
+                                    }
+
+                                    return {
+                                      id: `edit-q-${q.id}-${Math.random()}`,
+                                      content: remaining,
+                                      type: q.type as PracticeQuestionType,
+                                      optionsText,
+                                      correctAnswerText,
+                                      hasAudio: !!script,
+                                      audioLang: lang,
+                                      audioScript: script,
+                                      points: q.points || 1,
+                                    };
+                                  });
+
+                                  setPracticeQuestions(draftQuestions.length ? draftQuestions : [createPracticeQuestionDraftForExerciseType(detail.type)]);
+                                  setIsPracticeModalOpen(true);
+                                } catch {
+                                  window.alert('Không thể tải chi tiết bài bài tập để chỉnh sửa.');
+                                }
+                              }}
+                              className="p-2 text-[#4F46E5] hover:bg-[#EEF2FF] rounded-lg transition-colors"
+                              title="Chỉnh sửa bài tập"
+                            >
+                              <Pencil size={14} />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteExercise(exercise.id)}
+                              className="p-2 text-[#EF4444] hover:bg-[#FEF2F2] rounded-lg transition-colors"
+                              title="Xóa bài tập"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -835,7 +907,9 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
           <div className="w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-[#E5E7EB] bg-white shadow-2xl p-5 md:p-6 space-y-5">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <h3 className="text-lg font-black text-[#1F2937]">Tạo bài luyện tập thủ công</h3>
+                <h3 className="text-lg font-black text-[#1F2937]">
+                  {editingExerciseId ? 'Chỉnh sửa bài luyện tập' : 'Tạo bài luyện tập thủ công'}
+                </h3>
                 <p className="text-sm text-[#6B7280] font-medium">Nhập theo đúng schema AI: MCQ có đúng 4 lựa chọn, CLOZE dùng [1], [2]... và đáp án theo thứ tự.</p>
               </div>
               <button
@@ -1237,7 +1311,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                     return;
                   }
 
-                  const ok = await createManualPracticeExercise({
+                  const payload = {
                     title: practiceTitle.trim(),
                     description: practiceDescription.trim() || undefined,
                     type: practiceType,
@@ -1274,10 +1348,18 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                         points: Number(question.points || 0),
                       };
                     }),
-                  });
+                  };
+
+                  let ok = false;
+                  if (editingExerciseId) {
+                    ok = await updateManualPracticeExercise(editingExerciseId, payload);
+                  } else {
+                    ok = await createManualPracticeExercise(payload);
+                  }
 
                   if (ok) {
                     setIsPracticeModalOpen(false);
+                    setEditingExerciseId(null);
                     setPracticeTitle('');
                     setPracticeDescription('');
                     setPracticeQuestions([createPracticeQuestionDraftForExerciseType(practiceType)]);
@@ -1286,7 +1368,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                 className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#B45309] text-white text-xs font-black uppercase tracking-widest hover:bg-[#92400E] disabled:opacity-60"
               >
                 {creatingPractice ? <Loader2 size={14} className="animate-spin" /> : <Dumbbell size={14} />}
-                {creatingPractice ? 'Đang tạo...' : 'Lưu bài luyện tập'}
+                {creatingPractice ? (editingExerciseId ? 'Đang lưu...' : 'Đang tạo...') : (editingExerciseId ? 'Cập nhật bài tập' : 'Lưu bài luyện tập')}
               </button>
             </div>
           </div>
