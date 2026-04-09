@@ -3,17 +3,7 @@ import { ClassModel } from '../models/Class';
 import { LessonModel } from '../models/Lesson';
 import { User } from '../models/User';
 import { Subject } from '../models/Subject';
-
-export interface AdminStats {
-    users: { total: number, admins: number };
-    content: {
-        classes: number;
-        subjects: number;
-        lessons: number;
-        documents: number;
-        exercises: number;
-    }
-}
+import type { LessonBlock, AdminStats, AdminManualExercisePayload } from '../models/adminApi';
 
 // --- Dashboard Stats ---
 export const getAdminStats = async (): Promise<AdminStats> => {
@@ -103,14 +93,53 @@ export const getAdminLessons = async (classId?: string, subjectId?: string, page
     return { count: 0, rows: [] };
 };
 
-export const createLesson = async (data: { title: string, description?: string, order?: number, subjectId: string, status?: 'DRAFT' | 'PUBLIC' }): Promise<LessonModel> => {
+export const getAdminLessonById = async (id: string): Promise<LessonModel> => {
+    const response = await api.get(`/admin/lessons/${id}`);
+    return new LessonModel(response.data);
+};
+
+export const createLesson = async (data: { title: string, description?: string, order?: number, subjectId: string, status?: 'DRAFT' | 'PUBLIC', contentStyle?: 'BLOCKS' | 'HTML', content?: any }): Promise<LessonModel> => {
     const response = await api.post('/admin/lessons', data);
     return new LessonModel(response.data);
 };
 
-export const updateLesson = async (id: string, data: Partial<{ title: string, description: string, order: number, status: 'DRAFT' | 'PUBLIC' }>): Promise<LessonModel> => {
+export const updateLesson = async (id: string, data: Partial<{ title: string, description: string, order: number, status: 'DRAFT' | 'PUBLIC', contentStyle: 'BLOCKS' | 'HTML', content: any }>): Promise<LessonModel> => {
     const response = await api.put(`/admin/lessons/${id}`, data);
     return new LessonModel(response.data);
+};
+
+export const createAdminManualExercise = async (payload: AdminManualExercisePayload) => {
+    const response = await api.post('/admin/exercises/manual', payload);
+    return response.data;
+};
+
+export const generateLessonBlocksFromPdf = async (file: File, titleHint?: string): Promise<LessonBlock[]> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    if (titleHint && titleHint.trim()) {
+        formData.append('titleHint', titleHint.trim());
+    }
+
+    const response = await api.post('/admin/lessons/generate-blocks', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return Array.isArray(response.data?.blocks) ? response.data.blocks : [];
+};
+
+export const uploadLessonImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post('/admin/lessons/upload-image', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+
+    return String(response.data?.url || '');
 };
 
 export const deleteLesson = async (id: string): Promise<any> => {

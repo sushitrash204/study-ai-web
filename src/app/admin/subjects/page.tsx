@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/admin/common/DataTable';
 import { StatusBadge } from '@/components/admin/common/StatusBadge';
+import { SystemBadge } from '@/components/admin/common/SystemBadge';
 import { Subject } from '@/models/Subject';
 import { useAdminSubjects, PRESET_COLORS } from '@/hooks/admin/useAdminSubjects';
 
@@ -59,6 +60,11 @@ export default function AdminSubjectsPage() {
       key: 'status', 
       header: 'Trạng thái',
       render: (item: Subject) => <StatusBadge status={item.status || 'DRAFT'} />
+    },
+    { 
+      key: 'isSystem', 
+      header: 'Loại',
+      render: (item: Subject) => <SystemBadge isSystem={item.isSystem || false} />
     },
     { 
       key: 'createdAt', 
@@ -222,12 +228,12 @@ export default function AdminSubjectsPage() {
                                 type="button"
                                 onClick={() => actions.setFormData({...state.formData, status: 'DRAFT'})}
                                 className={`flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${state.formData.status === 'DRAFT' ? 'bg-white shadow-sm text-[#F59E0B]' : 'text-gray-400'}`}
-                            >Draft</button>
+                            >Bản nháp</button>
                             <button 
                                 type="button"
                                 onClick={() => actions.setFormData({...state.formData, status: 'PUBLIC'})}
                                 className={`flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${state.formData.status === 'PUBLIC' ? 'bg-white shadow-sm text-[#10B981]' : 'text-gray-400'}`}
-                            >Public</button>
+                            >Công khai</button>
                         </div>
                     </div>
 

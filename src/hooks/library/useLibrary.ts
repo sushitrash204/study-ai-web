@@ -32,29 +32,30 @@ export const useLibrary = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedUploadSubjectId, setSelectedUploadSubjectId] = useState<string | null>(null);
     const [customTitle, setCustomTitle] = useState('');
+    const personalDocuments = useMemo(() => documents.filter((doc) => doc.lessonId === null), [documents]);
 
     // Group documents into sections by subject
     useEffect(() => {
         if (!subjects || !documents) return;
         
         const allAvailableSubjects = [...subjects, ...systemSubjects];
+        const personalDocuments = documents.filter((doc) => doc.lessonId === null);
         
         const grouped: Section[] = allAvailableSubjects.map(sub => ({
             id: sub.id,
             title: sub.name || 'Không tên',
             color: sub.color || '#007AFF',
             className: sub.class?.name,
-            data: documents.filter(doc => doc.subjectId === sub.id)
+            data: personalDocuments.filter(doc => doc.subjectId === sub.id)
         })).filter(sec => sec.data && sec.data.length > 0);
 
         setSections(grouped);
     }, [subjects, systemSubjects, documents]);
 
     // Lọc môn học hiển thị trong Modal tải lên dựa theo lớp đã chọn
-    const filteredSubjectsForUpload = useMemo(() => {
-        if (!selectedClassId) return [];
-        return systemSubjects.filter(sub => sub.classId === selectedClassId);
-    }, [systemSubjects, selectedClassId]);
+    const personalSubjectsForUpload = useMemo(() => {
+        return subjects;
+    }, [subjects]);
 
     const handleUpload = useCallback(async (file: File) => {
         if (!selectedUploadSubjectId) {
@@ -98,11 +99,11 @@ export const useLibrary = () => {
         state: {
             sections,
             filteredSections,
+            personalDocuments,
             selectedSubjectId,
             selectedClassId,
             classes,
-            subjects: systemSubjects,
-            filteredSubjectsForUpload,
+            subjects: personalSubjectsForUpload,
             isLoading: docLoading || subLoading || isUploading,
             isRefreshing: docRefreshing || subRefreshing,
             isUploading,

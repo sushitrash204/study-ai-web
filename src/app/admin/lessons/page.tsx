@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/admin/common/DataTable';
 import { StatusBadge } from '@/components/admin/common/StatusBadge';
+import { SystemBadge } from '@/components/admin/common/SystemBadge';
 import { LessonModel } from '@/models/Lesson';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -58,6 +59,11 @@ export default function AdminLessonsPage() {
       render: (item: LessonModel) => <StatusBadge status={item.status} />
     },
     { 
+      key: 'isSystem', 
+      header: 'Loại',
+      render: (item: LessonModel) => <SystemBadge isSystem={item.subject?.isSystem || false} />
+    },
+    { 
       key: 'createdAt', 
       header: 'Ngày tạo',
       render: (item: LessonModel) => (
@@ -80,7 +86,7 @@ export default function AdminLessonsPage() {
             <ExternalLink size={18} strokeWidth={2.5} />
           </Link>
           <button 
-            onClick={(e) => { e.stopPropagation(); actions.handleOpenModal(item); }}
+            onClick={(e) => { e.stopPropagation(); router.push(`/admin/lessons/${item.id}`); }}
             className="p-2 hover:bg-gray-100 rounded-xl transition-all text-gray-400 hover:text-[#1F2937]"
             title="Chỉnh sửa"
           >
@@ -111,7 +117,7 @@ export default function AdminLessonsPage() {
             <p className="text-[#6B7280] font-medium text-lg">Thiết lập chi tiết các bài học cho từng khối lớp và môn học.</p>
         </div>
         <button 
-          onClick={() => actions.handleOpenModal()}
+          onClick={() => router.push('/admin/lessons/new')}
           className="flex items-center justify-center space-x-2 px-6 py-4 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-[24px] font-black shadow-lg shadow-purple-500/20 transition-all active:scale-95"
         >
           <Plus size={20} strokeWidth={3} />
@@ -183,113 +189,6 @@ export default function AdminLessonsPage() {
         </div>
       )}
 
-      {/* Modal Integration */}
-      {state.isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-0">
-          <div className="absolute inset-0 bg-[#1F2937]/40 backdrop-blur-md" onClick={() => actions.setIsModalOpen(false)}></div>
-          <div className="relative bg-white w-full max-w-xl rounded-[36px] shadow-2xl p-8 space-y-8 animate-in zoom-in-95 duration-300">
-             <div className="flex justify-between items-start">
-               <div className="space-y-1">
-                  <h2 className="text-2xl font-black text-[#1F2937] tracking-tight">
-                    {state.editingLesson ? 'Cập nhật Bài học' : 'Thêm Bài học Mới'}
-                  </h2>
-                  <p className="text-gray-500 font-medium text-sm">Gắn bài học vào đúng khối lớp và môn học để học sinh dễ tìm thấy.</p>
-               </div>
-               <div className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest ${state.formData.status === 'PUBLIC' ? 'bg-[#D1FAE5] text-[#10B981]' : 'bg-[#F3F4F6] text-[#6B7280]'}`}>
-                  {state.formData.status === 'PUBLIC' ? 'Public' : 'Draft'}
-               </div>
-             </div>
-
-             <form onSubmit={actions.handleSubmit} className="space-y-6">
-                <div className="space-y-2">
-                   <label className="text-sm font-black text-[#1F2937] uppercase tracking-widest pl-1">Tên bài học</label>
-                   <input 
-                      autoFocus
-                      type="text" 
-                      value={state.formData.title}
-                      onChange={(e) => actions.setFormData({...state.formData, title: e.target.value})}
-                      placeholder="VD: Chương 1: Đạo hàm bài 1" 
-                      className="w-full px-6 py-4 bg-[#F9FAFA] border border-[#E5E7EB] rounded-2xl font-bold transition-all"
-                      required
-                   />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <label className="text-sm font-black text-[#1F2937] uppercase tracking-widest pl-1">Khối lớp</label>
-                        <select 
-                            value={state.formData.classId}
-                            onChange={(e) => actions.setFormData({...state.formData, classId: e.target.value})}
-                            className="w-full px-6 py-4 bg-[#F9FAFA] border border-[#E5E7EB] rounded-2xl font-bold"
-                            required
-                        >
-                            <option value="">Chọn lớp</option>
-                            {state.classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                        </select>
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-sm font-black text-[#1F2937] uppercase tracking-widest pl-1">Môn học</label>
-                        <select 
-                            value={state.formData.subjectId}
-                            onChange={(e) => actions.setFormData({...state.formData, subjectId: e.target.value})}
-                            className="w-full px-6 py-4 bg-[#F9FAFA] border border-[#E5E7EB] rounded-2xl font-bold"
-                            required
-                            disabled={!state.formData.classId}
-                        >
-                            <option value="">{state.formData.classId ? 'Chọn môn' : 'Chọn lớp trước'}</option>
-                            {state.modalSubjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-                        </select>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-5 gap-4">
-                    <div className="col-span-2 space-y-2">
-                        <label className="text-sm font-black text-[#1F2937] uppercase tracking-widest pl-1">Thứ tự (Order)</label>
-                        <input 
-                            type="number" 
-                            value={state.formData.order}
-                            onChange={(e) => actions.setFormData({...state.formData, order: parseInt(e.target.value)})}
-                            className="w-full px-6 py-4 bg-[#F9FAFA] border border-[#E5E7EB] rounded-2xl font-bold"
-                            required
-                        />
-                    </div>
-                    <div className="col-span-3 space-y-2">
-                        <label className="text-sm font-black text-[#1F2937] uppercase tracking-widest pl-1">Trạng thái ban đầu</label>
-                        <div className="flex bg-[#F9FAFA] border border-[#E5E7EB] rounded-2xl p-1 gap-1">
-                            <button 
-                                type="button"
-                                onClick={() => actions.setFormData({...state.formData, status: 'DRAFT'})}
-                                className={`flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${state.formData.status === 'DRAFT' ? 'bg-white shadow-sm text-[#F59E0B]' : 'text-gray-400'}`}
-                            >Draft</button>
-                            <button 
-                                type="button"
-                                onClick={() => actions.setFormData({...state.formData, status: 'PUBLIC'})}
-                                className={`flex-1 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${state.formData.status === 'PUBLIC' ? 'bg-white shadow-sm text-[#10B981]' : 'text-gray-400'}`}
-                            >Public</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex gap-4 pt-4">
-                   <button 
-                      type="button"
-                      onClick={() => actions.setIsModalOpen(false)}
-                      className="flex-1 px-6 py-4 bg-[#F3F4F6] hover:bg-[#E5E7EB] text-[#1F2937] rounded-[24px] font-black transition-all"
-                   >
-                      Hủy
-                   </button>
-                   <button 
-                      type="submit"
-                      disabled={state.isSubmitting}
-                      className="flex-1 px-6 py-4 bg-[#8B5CF6] hover:bg-[#7C3AED] text-white rounded-[24px] font-black shadow-lg shadow-purple-500/20 transition-all active:scale-95 disabled:opacity-50"
-                   >
-                      {state.isSubmitting ? 'Đang lưu...' : (state.editingLesson ? 'Cập nhật' : 'Tạo bài học')}
-                   </button>
-                </div>
-             </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

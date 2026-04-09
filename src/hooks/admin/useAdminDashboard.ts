@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAdminStats, AdminStats } from '@/services/adminService';
+import { getAdminStats } from '@/services/adminService';
+import type { AdminStats } from '@/models/adminApi';
 
 export const useAdminDashboard = () => {
     const [stats, setStats] = useState<AdminStats | null>(null);

@@ -2,6 +2,7 @@ import { Question } from './Question';
 import { Submission } from './Submission';
 export interface LatestSubmissionSummary {
     id: string;
+    userId?: string | null;
     score: number | null;
     status: 'SUBMITTED' | 'GRADED';
     submittedAt: string;
@@ -19,6 +20,9 @@ export class Exercise {
     difficulty?: 'EASY' | 'MEDIUM' | 'HARD' | null;
     dueDate?: string;
     documentId?: string | null;
+    lessonId?: string | null;
+    publishStatus?: 'PRIVATE' | 'DRAFT' | 'PUBLIC';
+    isSystem: boolean;
     subjectId: string;
     userId: string;
     latestSubmission?: Submission;
@@ -37,6 +41,9 @@ export class Exercise {
         this.difficulty = data?.difficulty || null;
         this.dueDate = data?.dueDate;
         this.documentId = data?.documentId || null;
+        this.lessonId = data?.lessonId || null;
+        this.publishStatus = data?.publishStatus || 'PRIVATE';
+        this.isSystem = data?.isSystem || false;
         this.subjectId = data?.subjectId || '';
         this.userId = data?.userId || '';
         this.latestSubmission = data?.latestSubmission ? new Submission(data.latestSubmission) : undefined;
@@ -49,7 +56,7 @@ export class Exercise {
     }
 
     get isCompleted(): boolean {
-        return this.status === 'COMPLETED';
+        return !!this.latestSubmission;
     }
 
     get isQuiz(): boolean {

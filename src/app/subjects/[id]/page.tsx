@@ -4,6 +4,8 @@ import React, { useEffect, use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSubjectDetail } from '@/hooks/subject/useSubjectDetail';
 import { useSubjects } from '@/hooks/subject/useSubjects';
+import * as subjectService from '@/services/subjectService';
+import { LessonModel } from '@/models/Lesson';
 import { ExerciseCard } from '@/components/subject/ExerciseCard';
 import GenerateExerciseModal from '@/components/library/GenerateExerciseModal';
 import { 
@@ -13,7 +15,8 @@ import {
     FileText, 
     Target,
     BookOpen,
-    MoreVertical
+    MoreVertical,
+    ChevronRight
 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -27,10 +30,14 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
     const { id } = use(params);
     const router = useRouter();
 
-    const { state: subState, actions: subActions } = useSubjects();
-    const subject = subState.subjects.find(s => s.id === id);
+    const { state: subState, actions: subActions } = useSubjects({ type: 'BOTH', autoFetch: true });
+    const subject = [...subState.subjects, ...subState.systemSubjects].find(s => s.id === id);
     const subjectName = subject?.name || 'Chi tiết môn học';
     const subjectColor = subject?.color || '#8B5CF6';
+    const isSystemSubject = subject?.isSystem || false;
+
+    const [lessons, setLessons] = React.useState<LessonModel[]>([]);
+    const [loadingLessons, setLoadingLessons] = React.useState(false);
 
     const { state, actions } = useSubjectDetail(id);
 
@@ -67,10 +74,19 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
     } = state;
 
     useEffect(() => {
-        actions.fetchExercises();
-    }, [actions.fetchExercises]);
+        if (isSystemSubject) {
+            setLoadingLessons(true);
+            subjectService.getLessonsBySubject(id)
+                .then(setLessons)
+                .catch(() => setLessons([]))
+                .finally(() => setLoadingLessons(false));
+            return;
+        }
 
-    const completedCount = exercises.filter(e => e.status === 'COMPLETED').length;
+        actions.fetchExercises();
+    }, [actions.fetchExercises, id, isSystemSubject]);
+
+    const completedCount = exercises.filter(e => !!e.latestSubmission).length;
     const totalCount = exercises.length;
     const progressPerc = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -112,16 +128,16 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
                 <section className="bg-white p-5 rounded-[20px] border border-[#EEF0F4] shadow-sm">
                     <h2 className="text-[14px] font-bold uppercase tracking-widest text-[#8B5CF6] mb-4">Tiến độ học tập</h2>
 
-                    <div className="flex items-end justify-between mb-5">
-                        <div className="space-y-1">
-                            <p className="text-[14px] text-[#6B7280]">
-                                Tổng số bài học: <span className="font-bold text-[#1F2937]">{totalCount}</span>
+                    <div className="flex items-end justify-between gap-4 mb-5">
+                        <div className="space-y-1.5">
+                            <p className="text-[14px] leading-6 text-[#6B7280]">
+                                Tổng số bài tập: <span className="font-bold text-[#1F2937]">{totalCount}</span>
                             </p>
-                            <p className="text-[14px] text-[#6B7280]">
+                            <p className="text-[14px] leading-6 text-[#6B7280]">
                                 Đã hoàn thành: <span className="font-bold text-[#1F2937]">{completedCount} ({progressPerc}%)</span>
                             </p>
                         </div>
-                        <div className="text-[32px] font-bold text-[#1F2937] leading-none tracking-tight">
+                        <div className="text-[24px] md:text-[28px] font-semibold text-[#1F2937] leading-none tracking-tight shrink-0 tabular-nums">
                             {progressPerc}%
                         </div>
                     </div>
@@ -134,14 +150,47 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
                     </div>
                 </section>
 
-                {/* Exercises List */}
+                {/* Content List */}
                 <section className="space-y-4">
                     <div className="flex items-center justify-between px-1">
-                        <h2 className="text-[20px] font-bold text-[#1F2937]">Danh sách bộ đề</h2>
-                        {refreshing && <Loader2 className="animate-spin text-[#8E8E93]" size={16} />}
+                        <h2 className="text-[20px] font-bold text-[#1F2937]">{isSystemSubject ? 'Danh sách bài học' : 'Danh sách bộ đề'}</h2>
+                        {!isSystemSubject && refreshing && <Loader2 className="animate-spin text-[#8E8E93]" size={16} />}
                     </div>
 
-                    {loading ? (
+                    {isSystemSubject ? (
+                        loadingLessons ? (
+                            <div className="flex flex-col items-center justify-center py-20 animate-pulse">
+                                <Loader2 className="animate-spin text-[#8B5CF6] mb-4" size={32} />
+                                <p className="text-[#6B7280] font-medium">Đang tải bài học...</p>
+                            </div>
+                        ) : lessons.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-24 bg-white border-2 border-dashed border-[#EEF0F4] rounded-[32px]">
+                                <div className="w-16 h-16 bg-[#F5F3FF] rounded-[20px] flex items-center justify-center text-[#8B5CF6] mb-6">
+                                    <BookOpen size={32} strokeWidth={1.5} />
+                                </div>
+                                <h3 className="text-lg font-bold text-[#1F2937] mb-2">Chưa có bài học nào</h3>
+                                <p className="text-[#6B7280] text-center text-sm px-8 max-w-sm">Nội dung môn học đang được cập nhật, vui lòng quay lại sau.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {lessons.map((lesson) => (
+                                    <button
+                                        key={lesson.id}
+                                        onClick={() => router.push(`/subjects/${id}/lessons/${lesson.id}`)}
+                                        className="w-full text-left bg-white border border-[#EEF0F4] rounded-2xl px-5 py-4 hover:border-[#D8B4FE] hover:shadow-sm transition-all"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <p className="text-sm font-black text-[#8B5CF6] uppercase tracking-widest">Bài {lesson.order}</p>
+                                                <h3 className="text-lg font-bold text-[#1F2937] mt-1">{lesson.title}</h3>
+                                            </div>
+                                            <ChevronRight className="text-[#9CA3AF]" size={20} />
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        )
+                    ) : loading ? (
                         <div className="flex flex-col items-center justify-center py-20 animate-pulse">
                             <Loader2 className="animate-spin text-[#8B5CF6] mb-4" size={32} />
                             <p className="text-[#6B7280] font-medium">Đang tải bộ đề...</p>
@@ -172,29 +221,33 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Floating Action Button (FAB) */}
-            <button
-                onClick={actions.openGenModal}
-                className="fixed bottom-[calc(92px+env(safe-area-inset-bottom))] right-6 md:bottom-10 md:right-10 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-[0_8px_20px_rgba(139,92,246,0.3)] hover:shadow-[0_12px_25px_rgba(139,92,246,0.4)] hover:-translate-y-1 transition-all z-20 active:scale-95 bg-[#8B5CF6]"
-            >
-                <Sparkles size={28} strokeWidth={2} />
-            </button>
+            {!isSystemSubject && (
+                <button
+                    onClick={actions.openGenModal}
+                    className="fixed bottom-[calc(92px+env(safe-area-inset-bottom))] right-6 md:bottom-10 md:right-10 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-[0_8px_20px_rgba(139,92,246,0.3)] hover:shadow-[0_12px_25px_rgba(139,92,246,0.4)] hover:-translate-y-1 transition-all z-20 active:scale-95 bg-[#8B5CF6]"
+                >
+                    <Sparkles size={28} strokeWidth={2} />
+                </button>
+            )}
 
-            <GenerateExerciseModal
-                visible={genModalVisible}
-                onClose={() => actions.setGenModalVisible(false)}
-                pdfDocs={pdfDocs}
-                selectedDocId={selectedDocId}
-                onSelectDoc={actions.setSelectedDocId}
-                genType={genType}
-                onSetGenType={actions.setGenType}
-                genCount={genCount}
-                onSetGenCount={actions.setGenCount}
-                genDifficulty={genDifficulty}
-                onSetGenDifficulty={actions.setGenDifficulty}
-                onGenerate={actions.handleGenerateExercise}
-                generating={generating}
-                subjectColor={subjectColor}
-            />
+            {!isSystemSubject && (
+                <GenerateExerciseModal
+                    visible={genModalVisible}
+                    onClose={() => actions.setGenModalVisible(false)}
+                    pdfDocs={pdfDocs}
+                    selectedDocId={selectedDocId}
+                    onSelectDoc={actions.setSelectedDocId}
+                    genType={genType}
+                    onSetGenType={actions.setGenType}
+                    genCount={genCount}
+                    onSetGenCount={actions.setGenCount}
+                    genDifficulty={genDifficulty}
+                    onSetGenDifficulty={actions.setGenDifficulty}
+                    onGenerate={actions.handleGenerateExercise}
+                    generating={generating}
+                    subjectColor={subjectColor}
+                />
+            )}
         </main>
     );
 }

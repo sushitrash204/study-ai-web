@@ -11,6 +11,10 @@ export default function PDFViewerPage({ params }: { params: Promise<{ id: string
     
     const url = searchParams.get('url');
     const title = searchParams.get('title') || 'Tài liệu';
+    const openChatWithDocument = () => {
+        const requestId = `${documentId}-${encodeURIComponent(title)}`;
+        router.push(`/chat?summaryDocumentId=${documentId}&summaryTitle=${encodeURIComponent(title)}&summaryRequestId=${requestId}`);
+    };
 
     const [loading, setLoading] = useState(true);
     const [numPages, setNumPages] = useState(0);
@@ -185,7 +189,7 @@ export default function PDFViewerPage({ params }: { params: Promise<{ id: string
                 <div className="h-6 w-[1px] bg-[#E5E7EB]"></div>
 
                 <button 
-                    onClick={() => router.push(`/chat?documentId=${documentId}&title=${encodeURIComponent(title)}`)}
+                    onClick={openChatWithDocument}
                     className="flex items-center space-x-2 text-[#8B5CF6] hover:bg-[#F5F3FF] px-3 py-2 rounded-xl transition-colors"
                 >
                     <Sparkles size={18} />

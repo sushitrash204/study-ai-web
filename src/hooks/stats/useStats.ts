@@ -11,7 +11,7 @@ export interface UserStats {
 }
 
 export function useStats() {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated, accessToken } = useAuthStore();
     const [stats, setStats] = useState<UserStats>({
         totalSubjects: 0,
         mySubjects: 0,
@@ -23,7 +23,7 @@ export function useStats() {
     const [error, setError] = useState<string | null>(null);
 
     const fetchStats = useCallback(async () => {
-        if (!isAuthenticated) return;
+        if (!isAuthenticated || !accessToken) return;
         
         setIsLoading(true);
         setError(null);
@@ -36,7 +36,7 @@ export function useStats() {
         } finally {
             setIsLoading(false);
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, accessToken]);
 
     useEffect(() => {
         fetchStats();

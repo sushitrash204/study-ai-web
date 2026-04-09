@@ -1,5 +1,5 @@
 import api from './api';
-import { Document, DeleteDocumentResponse, DocumentSummary, DocumentChatResponse } from '../models/Document';
+import { Document, DeleteDocumentResponse, DocumentChatResponse } from '../models/Document';
 
 export const getAllDocuments = async (): Promise<Document[]> => {
     const response = await api.get('/documents');
@@ -17,12 +17,20 @@ export const getDocumentsBySubject = async (subjectId: string): Promise<Document
     return [];
 };
 
-export const uploadDocument = async (file: any, subjectId: string, title?: string): Promise<Document> => {
+export const uploadDocument = async (
+    file: any,
+    subjectId: string,
+    title?: string,
+    lessonId?: string,
+    status?: 'PRIVATE' | 'DRAFT' | 'PUBLIC'
+): Promise<Document> => {
     const formData = new FormData();
     const normalizedTitle = typeof title === 'string' ? title.trim() : '';
 
     formData.append('subjectId', subjectId);
     if (normalizedTitle) formData.append('title', normalizedTitle);
+    if (lessonId) formData.append('lessonId', lessonId);
+    if (status) formData.append('status', status);
 
     formData.append('file', file);
 

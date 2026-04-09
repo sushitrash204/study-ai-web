@@ -116,6 +116,14 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
     const formatPt = (v: number) => v.toLocaleString('vi-VN', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
+    const handleBackNavigation = () => {
+        if (exercise?.lessonId && exercise?.subjectId) {
+            router.push(`/subjects/${exercise.subjectId}/lessons/${exercise.lessonId}`);
+            return;
+        }
+        router.back();
+    };
+
     const handleSubmit = async () => {
         const unanswered = questions.filter(q => !userAnswers[q.id] && !essayAnswers[q.id]).length;
         if (unanswered > 0) {
@@ -144,14 +152,14 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
     // ── Result Screen ────────────────────────────────
     if (submitted) {
-        const { correctCount, total, scoreOnTen, wrongCount, unansweredCount, pct, passed, ratioCorrect, ratioWrong, ratioSkipped, performance, scoreChips } = results;
+        const { correctCount, total, scoreOnTen, wrongCount, pct, passed, ratioCorrect, ratioWrong, performance, scoreChips } = results;
         const scoreText = formatPt(scoreOnTen);
 
         return (
             <main className="flex-1 flex flex-col h-full animate-in fade-in duration-500 overflow-hidden font-sans">
                 {/* Header */}
                 <header className="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-4 flex items-center justify-between shadow-sm">
-                    <button onClick={() => router.back()} className="p-2 hover:bg-[#F3F4F6] rounded-full text-[#6B7280]">
+                    <button onClick={handleBackNavigation} className="p-2 hover:bg-[#F3F4F6] rounded-full text-[#6B7280]">
                         <ArrowLeft size={24} strokeWidth={2.5} />
                     </button>
                     <h1 className="font-extrabold text-[#1F2937] text-lg">Kết quả</h1>
@@ -203,12 +211,10 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                             <div className="h-4 bg-[#F1F5F9] rounded-full overflow-hidden flex mb-3">
                                 <div className="h-full bg-[#10B981] transition-all" style={{ width: `${Math.max(ratioCorrect, 0)}%` }} />
                                 <div className="h-full bg-[#EF4444] transition-all" style={{ width: `${Math.max(ratioWrong, 0)}%` }} />
-                                {unansweredCount > 0 && <div className="h-full bg-[#94A3B8]" style={{ width: `${Math.max(ratioSkipped, 0)}%` }} />}
                             </div>
                             <div className="flex flex-wrap gap-4">
                                 <span className="flex items-center text-sm font-bold text-[#065F46]"><span className="w-2.5 h-2.5 rounded-full bg-[#10B981] mr-2" />Đúng {correctCount}</span>
                                 <span className="flex items-center text-sm font-bold text-[#991B1B]"><span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] mr-2" />Sai {wrongCount}</span>
-                                {unansweredCount > 0 && <span className="flex items-center text-sm font-bold text-[#334155]"><span className="w-2.5 h-2.5 rounded-full bg-[#94A3B8] mr-2" />Bỏ trống {unansweredCount}</span>}
                             </div>
                         </div>
                     )}
@@ -218,34 +224,127 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                         <h3 className="text-xl font-black text-[#0F172A] mb-4">Xem lại đáp án</h3>
                         <div className="space-y-6">
                             {questions.map((q, idx) => {
-                                const picked = userAnswers[q.id];
-                                const answered = !!picked;
+                                const picked = q.type === 'ESSAY'
+                                    ? (essayAnswers[q.id] ?? userAnswers[q.id])
+                                    : userAnswers[q.id];
+                                const answered = q.type === 'ESSAY'
+                                    ? typeof picked === 'string' && picked.trim().length > 0
+                                    : (q.type === 'CLOZE_MCQ' || q.type === 'CLOZE_TEXT')
+                                        ? (Array.isArray(picked)
+                                            ? picked.some((v) => String(v || '').trim().length > 0)
+                                            : !!picked)
+                                        : !!picked;
                                 const fallbackPoint = total > 0 ? 10 / total : 0;
                                 const questionPoint = sessionActions.getQuestionPoint(q, fallbackPoint);
-                                const isCorrect = sessionActions.isQuestionCorrect(q, picked);
+                                const essayEval = q.type === 'ESSAY'
+                                    ? (essayEvaluation?.items?.find((item: any) => item.questionId === q.id) || null)
+                                    : null;
+                                const isCorrect = q.type === 'ESSAY' ? false : sessionActions.isQuestionCorrect(q, picked);
+
+                                const earnedPoint = (() => {
+                                    if (!answered) return 0;
+
+                                    if (q.type === 'ESSAY') {
+                                        const score = Number(essayEval?.score);
+                                        return Number.isFinite(score) ? Math.max(0, score) : 0;
+                                    }
+
+                                    if (q.type === 'CLOZE_MCQ' || q.type === 'CLOZE_TEXT') {
+                                        const userArr = Array.isArray(picked) ? picked : [];
+                                        const correctArr = q.parsedCorrectAnswers;
+                                        if (!correctArr.length) return 0;
+
+                                        const clean = (s: any) => String(s || '').trim().toLowerCase().normalize('NFC').replace(/[.,!?;:]+$/, '');
+                                        let correctBlanks = 0;
+                                        correctArr.forEach((c: string, i: number) => {
+                                            if (clean(userArr[i]) === clean(c) && String(userArr[i] || '').trim() !== '') {
+                                                correctBlanks++;
+                                            }
+                                        });
+
+                                        return (correctBlanks / correctArr.length) * questionPoint;
+                                    }
+
+                                    return isCorrect ? questionPoint : 0;
+                                })();
+
+                                const reviewTone: 'empty' | 'correct' | 'partial' | 'incorrect' = (() => {
+                                    if (!answered) return 'empty';
+
+                                    if (q.type === 'ESSAY') {
+                                        const score = Number(essayEval?.score);
+                                        const maxPoints = Number(essayEval?.maxPoints);
+                                        if (Number.isFinite(score) && Number.isFinite(maxPoints) && maxPoints > 0) {
+                                            if (score <= 0) return 'incorrect';
+                                            if (score >= maxPoints) return 'correct';
+                                            return 'partial';
+                                        }
+                                        return 'partial';
+                                    }
+
+                                    if (q.type === 'CLOZE_MCQ' || q.type === 'CLOZE_TEXT') {
+                                        if (earnedPoint <= 0) return 'incorrect';
+                                        if (earnedPoint >= questionPoint) return 'correct';
+                                        return 'partial';
+                                    }
+
+                                    return isCorrect ? 'correct' : 'incorrect';
+                                })();
+
+                                const scoreBadgeText = q.type === 'ESSAY'
+                                    ? `${formatPt(earnedPoint)}/${formatPt(Number(essayEval?.maxPoints) || questionPoint)} điểm`
+                                    : `${formatPt(earnedPoint)}/${formatPt(questionPoint)} điểm`;
 
                                 return (
                                     <div key={q.id} className={cn(
                                         "bg-white rounded-[32px] overflow-hidden border-2 transition-all duration-300",
-                                        !answered ? "border-[#E2E8F0] grayscale" : isCorrect ? "border-[#10B981] shadow-lg shadow-[#10B981]/5" : "border-[#EF4444] shadow-lg shadow-[#EF4444]/5"
+                                        reviewTone === 'empty'
+                                            ? "border-[#E2E8F0] grayscale"
+                                            : reviewTone === 'correct'
+                                                ? "border-[#10B981] shadow-lg shadow-[#10B981]/5"
+                                                : reviewTone === 'partial'
+                                                    ? "border-[#F59E0B] shadow-lg shadow-[#F59E0B]/10"
+                                                    : "border-[#EF4444] shadow-lg shadow-[#EF4444]/5"
                                     )}>
                                         <div className="px-6 py-4 bg-[#F8FAFC] border-b border-[#E5E7EB] flex items-center justify-between">
                                             <div className="flex items-center space-x-3">
                                                 <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center",
-                                                    !answered ? "bg-white border border-[#E2E8F0]" : isCorrect ? "bg-[#D1FAE5]" : "bg-[#FEE2E2]"
+                                                    reviewTone === 'empty'
+                                                        ? "bg-white border border-[#E2E8F0]"
+                                                        : reviewTone === 'correct'
+                                                            ? "bg-[#D1FAE5]"
+                                                            : reviewTone === 'partial'
+                                                                ? "bg-[#FEF3C7]"
+                                                                : "bg-[#FEE2E2]"
                                                 )}>
-                                                    {!answered ? <Minus size={14} className="text-[#64748B]" /> :
-                                                     isCorrect ? <Check size={14} className="text-[#059669]" strokeWidth={3} /> :
+                                                    {reviewTone === 'empty' ? <Minus size={14} className="text-[#64748B]" /> :
+                                                     reviewTone === 'correct' ? <Check size={14} className="text-[#059669]" strokeWidth={3} /> :
+                                                     reviewTone === 'partial' ? <CheckCircle2 size={14} className="text-[#B45309]" strokeWidth={2.75} /> :
                                                      <X size={14} className="text-[#DC2626]" strokeWidth={3} />}
                                                 </div>
                                                 <div className="flex flex-col">
                                                     <span className="text-[10px] font-black text-[#64748B] uppercase tracking-[0.2em]">CÂU {idx + 1}</span>
-                                                    <span className={cn("text-xs font-bold", !answered ? "text-[#94A3B8]" : isCorrect ? "text-[#059669]" : "text-[#B91C1C]")}>
-                                                        {!answered ? 'Bỏ trống' : isCorrect ? 'Chính xác' : 'Kết quả chưa đúng'}
+                                                    <span className={cn(
+                                                        "text-xs font-bold",
+                                                        reviewTone === 'empty'
+                                                            ? "text-[#94A3B8]"
+                                                            : reviewTone === 'correct'
+                                                                ? "text-[#059669]"
+                                                                : reviewTone === 'partial'
+                                                                    ? "text-[#B45309]"
+                                                                    : "text-[#B91C1C]"
+                                                    )}>
+                                                        {reviewTone === 'empty'
+                                                            ? 'Bỏ trống'
+                                                            : reviewTone === 'correct'
+                                                                ? (q.type === 'ESSAY' ? 'Đạt tối đa' : 'Chính xác')
+                                                                : reviewTone === 'partial'
+                                                                    ? (q.type === 'ESSAY' ? 'Đạt một phần' : 'Đúng một phần')
+                                                                    : (q.type === 'ESSAY' ? 'Chưa đạt' : 'Kết quả chưa đúng')}
                                                     </span>
                                                 </div>
                                             </div>
-                                            <span className="text-xs font-black text-[#6366F1] bg-[#EEF2FF] px-2.5 py-1 rounded-lg">+{formatPt(questionPoint)} điểm</span>
+                                            <span className="text-xs font-black text-[#6366F1] bg-[#EEF2FF] px-2.5 py-1 rounded-lg">{scoreBadgeText}</span>
                                         </div>
 
                                         <div className="p-6 md:p-8">
@@ -280,7 +379,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                                                 <EssayReviewDetail
                                                     content={''}
                                                     picked={picked}
-                                                    evaluation={essayEvaluation?.items?.find((item: any) => item.questionId === q.id) || null}
+                                                    evaluation={essayEval}
                                                 />
                                             )}
                                         </div>
@@ -293,7 +392,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
                     {/* Action Buttons */}
                     <div className="flex gap-3 pt-6">
-                        <button onClick={() => router.back()} className="flex-1 py-4 bg-[#F5F3FF] border border-[#C4B5FD] text-[#6D28D9] font-bold rounded-[16px] transition-all hover:bg-[#EDE9FE]">
+                        <button onClick={handleBackNavigation} className="flex-1 py-4 bg-[#F5F3FF] border border-[#C4B5FD] text-[#6D28D9] font-bold rounded-[16px] transition-all hover:bg-[#EDE9FE]">
                             Quay lại
                         </button>
                         <button
@@ -315,7 +414,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                 {/* Header */}
                 <header className="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 shadow-sm">
                     <div className="flex items-center justify-between max-w-3xl mx-auto">
-                        <button onClick={() => router.back()} className="p-2 hover:bg-[#F3F4F6] rounded-full text-[#6B7280]"><ArrowLeft size={22} strokeWidth={2.5} /></button>
+                        <button onClick={handleBackNavigation} className="p-2 hover:bg-[#F3F4F6] rounded-full text-[#6B7280]"><ArrowLeft size={22} strokeWidth={2.5} /></button>
                         <div className="text-center">
                             <p className="font-extrabold text-[#1F2937] text-[15px] line-clamp-1 max-w-[200px]">{exercise.title}</p>
                             <p className="text-xs font-bold text-[#8B5CF6]">Câu {currentIndex + 1}/{questions.length} • Đã làm {answeredCount}</p>
@@ -534,7 +633,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
         <main className="flex-1 flex flex-col h-full animate-in fade-in duration-500 overflow-hidden font-sans">
             <header className="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-[#E5E7EB] px-4 py-3 shadow-sm">
                 <div className="flex items-center justify-between max-w-3xl mx-auto">
-                    <button onClick={() => router.back()} className="p-2 hover:bg-[#F3F4F6] rounded-full text-[#6B7280]"><ArrowLeft size={22} strokeWidth={2.5} /></button>
+                    <button onClick={handleBackNavigation} className="p-2 hover:bg-[#F3F4F6] rounded-full text-[#6B7280]"><ArrowLeft size={22} strokeWidth={2.5} /></button>
                     <div className="text-center">
                         <p className="font-extrabold text-[#1F2937] text-[15px] line-clamp-1 max-w-[200px]">{exercise.title}</p>
                         <p className="text-xs font-bold text-[#6B7280]">Tự luận • {questions.length} câu</p>
@@ -588,7 +687,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E7EB] px-4 py-4 pb-[max(env(safe-area-inset-bottom),16px)] z-20">
                 <div className="max-w-3xl mx-auto flex items-center justify-between">
-                    <button onClick={() => router.back()} className="px-5 py-3 rounded-2xl font-bold text-sm border-2 border-[#E2E8F0] text-[#6B7280]">Hủy</button>
+                    <button onClick={handleBackNavigation} className="px-5 py-3 rounded-2xl font-bold text-sm border-2 border-[#E2E8F0] text-[#6B7280]">Hủy</button>
                     <button
                         onClick={handleSubmit}
                         disabled={submitting}

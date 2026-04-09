@@ -6,6 +6,7 @@ export class Subject {
     classId: string | null;
     class?: { id: string; name: string };
     status: 'PRIVATE' | 'DRAFT' | 'PUBLIC';
+    isSystem: boolean;
     createdAt?: string;
     updatedAt?: string;
 
@@ -17,6 +18,7 @@ export class Subject {
         this.classId = data?.classId || null;
         this.class = data?.class || undefined;
         this.status = data?.status || 'PRIVATE';
+        this.isSystem = data?.isSystem || false;
         this.createdAt = data?.createdAt;
         this.updatedAt = data?.updatedAt;
     }

@@ -32,14 +32,12 @@ export const useExerciseResult = (session: ExerciseSessionState, actions: Sessio
             0
         );
 
-        const wrongCount = Math.max(answeredCount - correctCount, 0);
-        const unansweredCount = Math.max(total - answeredCount, 0);
+        const wrongCount = Math.max(total - correctCount, 0);
         const pct = total > 0 ? Math.round((scoreOnTen / 10) * 100) : 0;
         const passed = scoreOnTen >= 6;
 
         const ratioCorrect = total > 0 ? (correctCount / total) * 100 : 0;
         const ratioWrong = total > 0 ? (wrongCount / total) * 100 : 0;
-        const ratioSkipped = total > 0 ? (unansweredCount / total) * 100 : 0;
 
         const performance = scoreOnTen >= 8.5
             ? {
@@ -72,7 +70,6 @@ export const useExerciseResult = (session: ExerciseSessionState, actions: Sessio
             { label: 'Điểm số', value: `${scoreOnTen.toLocaleString('vi-VN', { maximumFractionDigits: 1 })}/10`, tone: '#0F172A' },
             { label: 'Đã đúng', value: `${correctCount}/${total}`, tone: '#047857' },
             { label: 'Lỗi sai', value: String(wrongCount), tone: '#B91C1C' },
-            { label: 'Bỏ qua', value: String(unansweredCount), tone: '#475569' },
         ];
 
         return {
@@ -81,12 +78,10 @@ export const useExerciseResult = (session: ExerciseSessionState, actions: Sessio
             scoreOnTen,
             answeredCount,
             wrongCount,
-            unansweredCount,
             pct,
             passed,
             ratioCorrect,
             ratioWrong,
-            ratioSkipped,
             performance,
             scoreChips
         };

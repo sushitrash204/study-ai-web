@@ -1,6 +1,5 @@
 import api from './api';
 import { Exercise } from '../models/Exercise';
-import { Question } from '../models/Question';
 import { Submission, SubmitAnswer } from '../models/Submission';
 
 export const getExercisesBySubject = async (subjectId: string): Promise<Exercise[]> => {

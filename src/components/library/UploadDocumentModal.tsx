@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Upload, Loader2, BookOpen, Layers } from 'lucide-react';
+import { X, Upload, Loader2, BookOpen } from 'lucide-react';
 import { Subject } from '@/models/Subject';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -13,10 +13,7 @@ function cn(...inputs: ClassValue[]) {
 interface UploadDocumentModalProps {
     visible: boolean;
     onClose: () => void;
-    classes: any[]; // Danh sách khối lớp (Lớp 1-12)
-    selectedClassId: string | null;
-    onSelectClass: (id: string) => void;
-    subjects: Subject[]; // Danh sách môn học đã lọc theo lớp
+    subjects: Subject[];
     selectedSubjectId: string | null;
     onSelectSubject: (id: string) => void;
     customTitle: string;
@@ -28,9 +25,6 @@ interface UploadDocumentModalProps {
 export default function UploadDocumentModal({
     visible,
     onClose,
-    classes,
-    selectedClassId,
-    onSelectClass,
     subjects,
     selectedSubjectId,
     onSelectSubject,
@@ -61,35 +55,11 @@ export default function UploadDocumentModal({
                 </div>
 
                 <div className="space-y-8">
-                    {/* Step 1: Chọn Khối lớp */}
+                    {/* Chọn môn học cá nhân */}
                     <div className="space-y-4">
-                        <div className="flex items-center space-x-2 text-[#8B5CF6]">
-                            <Layers size={18} strokeWidth={2.5} />
-                            <label className="text-[11px] font-bold uppercase tracking-widest px-1">Bước 1: Chọn khối lớp</label>
-                        </div>
-                        <div className="grid grid-cols-4 gap-2">
-                            {classes.map(c => (
-                                <button 
-                                    key={c.id}
-                                    onClick={() => onSelectClass(c.id)}
-                                    className={cn(
-                                        "py-2.5 rounded-xl border text-[13px] font-black transition-all",
-                                        selectedClassId === c.id 
-                                            ? "bg-[#8B5CF6] border-[#8B5CF6] text-white shadow-md scale-105" 
-                                            : "bg-[#F9FAFB] border-[#E5E7EB] text-[#4B5563] hover:bg-[#F3F4F6]"
-                                    )}
-                                >
-                                    {c.name.replace('Lớp ', 'L')}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Step 2: Chọn Môn học */}
-                    <div className={cn("space-y-4 transition-opacity duration-300", !selectedClassId && "opacity-30 pointer-events-none")}>
                         <div className="flex items-center space-x-2 text-[#10B981]">
                             <BookOpen size={18} strokeWidth={2.5} />
-                            <label className="text-[11px] font-bold uppercase tracking-widest px-1">Bước 2: Chọn môn học</label>
+                            <label className="text-[11px] font-bold uppercase tracking-widest px-1">Chọn môn học cá nhân</label>
                         </div>
                         <div className="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
                             {subjects.length > 0 ? (
@@ -110,16 +80,16 @@ export default function UploadDocumentModal({
                                 ))
                             ) : (
                                 <div className="col-span-2 py-4 text-center text-gray-400 text-xs italic">
-                                    Vui lòng chọn lớp để xem môn học
+                                    Chưa có môn học cá nhân nào để chọn
                                 </div>
                             )}
                         </div>
                     </div>
 
-                    {/* Step 3: Thông tin thêm & Tải lên */}
+                    {/* Thông tin thêm & Tải lên */}
                     <div className={cn("space-y-6 transition-opacity duration-300", !selectedSubjectId && "opacity-30 pointer-events-none")}>
                         <div className="space-y-3">
-                            <label className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-widest px-1">Tiêu đề bài học (Tùy chọn)</label>
+                            <label className="text-[11px] font-bold text-[#8E8E93] uppercase tracking-widest px-1">Tiêu đề tài liệu (Tùy chọn)</label>
                             <input 
                                 type="text" 
                                 placeholder="Nhập tiêu đề tài liệu..."

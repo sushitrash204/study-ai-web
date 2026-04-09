@@ -24,6 +24,9 @@ export class Document {
     fileUrl: string;
     fileType: string;
     subjectId: string;
+    lessonId?: string | null;
+    status?: 'PRIVATE' | 'DRAFT' | 'PUBLIC';
+    isSystem: boolean;
     userId: string;
     createdAt?: string;
 
@@ -33,6 +36,9 @@ export class Document {
         this.fileUrl = data?.fileUrl || '';
         this.fileType = data?.fileType || '';
         this.subjectId = data?.subjectId || '';
+        this.lessonId = data?.lessonId || null;
+        this.status = data?.status;
+        this.isSystem = data?.isSystem || false;
         this.userId = data?.userId || '';
         this.createdAt = data?.createdAt;
     }

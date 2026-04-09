@@ -2,6 +2,8 @@ export class LessonModel {
     id: string;
     title: string;
     description?: string;
+    contentStyle: 'BLOCKS' | 'HTML';
+    content?: any;
     order: number;
     subjectId: string;
     userId: string;
@@ -9,12 +11,14 @@ export class LessonModel {
     createdAt?: string;
 
     // Optional included data
-    subject?: { name: string; color: string; classId?: string; class?: { name: string } };
+    subject?: { name: string; color: string; classId?: string; class?: { name: string }; isSystem?: boolean };
 
     constructor(data: any) {
         this.id = data?.id || '';
         this.title = data?.title || '';
         this.description = data?.description;
+        this.contentStyle = data?.contentStyle || 'BLOCKS';
+        this.content = data?.content;
         this.order = data?.order || 0;
         this.subjectId = data?.subjectId || '';
         this.userId = data?.userId || '';

@@ -25,14 +25,15 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
 }) => {
     const isQuiz = item.isQuiz;
     const isCompleted = item.isCompleted;
-    const compactDescription = String(item.description || 'Chưa làm').replace(/\s+/g, ' ').trim();
+    const compactDescription = String(item.description || 'Chưa có mô tả').replace(/\s+/g, ' ').trim();
     const latestSubmission = item.latestSubmission;
     const scoreText = item.formattedScore;
     const correctCount = latestSubmission?.correctCount ?? 0;
     const wrongCount = latestSubmission?.wrongCount ?? 0;
     const totalCount = latestSubmission?.totalCount ?? 0;
     const correctRatio = totalCount > 0 ? (correctCount / totalCount) * 100 : 0;
-    const wrongRatio = totalCount > 0 ? (wrongCount / totalCount) * 100 : 0;
+    const displayWrongCount = Math.max(totalCount - correctCount, 0);
+    const wrongRatio = totalCount > 0 ? (displayWrongCount / totalCount) * 100 : 0;
     const submittedTimeText = item.formattedSubmissionTime;
 
     const showQuizStats = !!(isCompleted && isQuiz && latestSubmission && scoreText !== null);
@@ -76,9 +77,9 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                             <div className="h-full bg-[#EF4444]" style={{ width: `${Math.max(wrongRatio, 0)}%` }} />
                         </div>
 
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center gap-2 flex-wrap">
                             <span className="text-[11px] font-bold text-[#059669]">Đúng {correctCount}</span>
-                            <span className="text-[11px] font-bold text-[#DC2626]">Sai {wrongCount}</span>
+                            <span className="text-[11px] font-bold text-[#DC2626]">Sai {displayWrongCount}</span>
                         </div>
 
                         {submittedTimeText && (

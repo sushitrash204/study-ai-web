@@ -108,7 +108,7 @@ export default function AdminDashboard() {
            <div className="space-y-4 relative z-10">
               {[
                 { title: "Cấu trúc nội dung", desc: "Luôn bắt đầu từ Khối lớp → Môn học → Bài học để đảm bảo cấu trúc dữ liệu." },
-                { title: "Trạng thái công khai", desc: "Tài liệu ở trạng thái PUBLIC sẽ hiển thị cho tất cả người dùng trong hệ thống." },
+                { title: "Trạng thái công khai", desc: "Tài liệu ở trạng thái công khai sẽ hiển thị cho tất cả người dùng trong hệ thống." },
                 { title: "Quản lý người dùng", desc: "Cẩn thận khi thay đổi quyền Admin cho người dùng khác." }
               ].map((item, i) => (
                 <div key={i} className="flex space-x-4">

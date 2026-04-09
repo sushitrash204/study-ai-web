@@ -1,5 +1,6 @@
 import api from './api';
 import { Subject } from '../models/Subject';
+import { LessonModel } from '../models/Lesson';
 
 export const getSubjects = async (): Promise<Subject[]> => {
     const response = await api.get('/subjects');
@@ -35,4 +36,17 @@ export const updateSubject = async (id: string, name: string, color?: string): P
 export const deleteSubject = async (id: string): Promise<any> => {
     const response = await api.delete(`/subjects/${id}`);
     return response.data;
+};
+
+export const getLessonsBySubject = async (subjectId: string): Promise<LessonModel[]> => {
+    const response = await api.get(`/subjects/${subjectId}/lessons`);
+    if (Array.isArray(response.data)) {
+        return response.data.map((item: any) => new LessonModel(item));
+    }
+    return [];
+};
+
+export const getLessonDetailBySubject = async (subjectId: string, lessonId: string): Promise<LessonModel> => {
+    const response = await api.get(`/subjects/${subjectId}/lessons/${lessonId}`);
+    return new LessonModel(response.data);
 };
