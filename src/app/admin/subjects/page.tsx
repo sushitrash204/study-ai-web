@@ -101,10 +101,10 @@ export default function AdminSubjectsPage() {
         <div className="space-y-2">
             <div className="flex items-center space-x-2 text-[#10B981]">
                 <Layers size={20} strokeWidth={2.5} />
-                <span className="font-black uppercase tracking-widest text-[11px]">Học thuật Phổ Thông</span>
+                <span className="font-black uppercase tracking-widest text-[11px]">Cấu trúc chương trình</span>
             </div>
             <h1 className="text-4xl font-black text-[#1F2937] tracking-tight">Quản lý Môn học</h1>
-            <p className="text-[#6B7280] font-medium text-lg">Phân loại môn học theo đúng khối lớp học tập.</p>
+            <p className="text-[#6B7280] font-medium text-lg">Quản lý danh mục môn học theo từng khối lớp.</p>
         </div>
         <button 
           onClick={() => actions.handleOpenModal(null)}
@@ -160,9 +160,9 @@ export default function AdminSubjectsPage() {
                  <div className="flex items-center justify-between">
                     <div className="space-y-1">
                        <h2 className="text-2xl font-black text-[#1F2937] tracking-tight">
-                         {state.editingSubject ? 'Chỉnh sửa môn học' : 'Thêm môn học mới'}
+                         {state.editingSubject ? 'Chỉnh sửa môn học' : 'Thêm môn học'}
                        </h2>
-                       <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Phân bổ môn học vào chương trình</p>
+                       <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Thông tin chi tiết môn học</p>
                     </div>
                     <button onClick={() => actions.setIsModalOpen(false)} className="p-3 hover:bg-gray-100 rounded-full transition-colors">
                        <X size={24} className="text-gray-400" />
@@ -243,7 +243,7 @@ export default function AdminSubjectsPage() {
                           type="submit"
                           className="flex-3 py-4 bg-[#8B5CF6] text-white font-black rounded-[24px] shadow-lg shadow-purple-500/20 hover:bg-[#7C3AED] transition-all"
                        >
-                          {state.editingSubject ? 'Cập nhật môn học' : 'Tạo môn học ngay'}
+                          {state.editingSubject ? 'Lưu thay đổi' : 'Tạo môn học'}
                        </button>
                     </div>
                  </form>

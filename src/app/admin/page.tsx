@@ -33,10 +33,10 @@ export default function AdminDashboard() {
       <header className="flex flex-col space-y-2">
         <div className="flex items-center space-x-2 text-[#8B5CF6]">
           <ShieldCheck size={20} strokeWidth={2.5} />
-          <span className="font-black uppercase tracking-widest text-[11px]">Hệ thống quản trị</span>
+          <span className="font-black uppercase tracking-widest text-[11px]">Trung tâm quản trị</span>
         </div>
         <h1 className="text-4xl font-black text-[#1F2937] tracking-tight">Tổng quan chương trình</h1>
-        <p className="text-[#6B7280] font-medium text-lg">Chào mừng bạn quay trở lại, Admin. Hãy kiểm tra các chỉ số hôm nay nhé.</p>
+        <p className="text-[#6B7280] font-medium text-lg">Hệ thống phân phối chương trình và quản lý học tập.</p>
       </header>
 
       {/* Stats Grid */}
@@ -56,18 +56,18 @@ export default function AdminDashboard() {
           onClick={() => actions.navigateTo('/admin/users')}
         />
         <AdminStatCard 
-          label="Khối lớp (Số lượng)" 
-          value={state.stats?.content.classes || 0} 
-          icon={GraduationCap} 
-          color="orange" 
-          onClick={() => actions.navigateTo('/admin/classes')}
-        />
-        <AdminStatCard 
-          label="Chương trình phổ thông" 
+          label="Tổng số Môn học" 
           value={state.stats?.content.subjects || 0} 
           icon={BookOpen} 
           color="teal" 
           onClick={() => actions.navigateTo('/admin/subjects')}
+        />
+        <AdminStatCard 
+          label="Khối lớp" 
+          value={state.stats?.content.classes || 0} 
+          icon={GraduationCap} 
+          color="orange" 
+          onClick={() => actions.navigateTo('/admin/classes')}
         />
         <AdminStatCard 
           label="Số lượng Bài học" 
@@ -107,9 +107,9 @@ export default function AdminDashboard() {
            <h3 className="text-xl font-black text-[#1F2937] tracking-tight relative z-10">Hướng dẫn Admin</h3>
            <div className="space-y-4 relative z-10">
               {[
-                { title: "Cấu trúc nội dung", desc: "Luôn bắt đầu từ Khối lớp → Môn học → Bài học để đảm bảo cấu trúc dữ liệu." },
-                { title: "Trạng thái công khai", desc: "Tài liệu ở trạng thái công khai sẽ hiển thị cho tất cả người dùng trong ứng dụng." },
-                { title: "Quản lý người dùng", desc: "Cẩn thận khi thay đổi quyền Admin cho người dùng khác." }
+                { title: "Hướng dẫn cấu trúc", desc: "Sử dụng mô hình Khối lớp → Môn học → Bài học để đồng bộ nội dung." },
+                { title: "Trạng thái hiển thị", desc: "Tài liệu 'Công khai' sẽ hiển thị trực tiếp cho người dùng trên ứng dụng." },
+                { title: "Bảo mật tài khoản", desc: "Lưu ý khi thay đổi quyền quản trị và quản lý học viên." }
               ].map((item, i) => (
                 <div key={i} className="flex space-x-4">
                   <div className="w-8 h-8 shrink-0 bg-[#F5F3FF] text-[#8B5CF6] border border-[#E5E7EB] rounded-lg flex items-center justify-center font-black text-sm">{i+1}</div>

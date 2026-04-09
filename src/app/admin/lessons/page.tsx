@@ -32,7 +32,7 @@ export default function AdminLessonsPage() {
       render: (item: LessonModel) => (
         <div className="flex flex-col">
             <span className="text-base font-black tracking-tight">{item.title}</span>
-            <span className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Order: {item.order}</span>
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Sắp xếp: {item.order}</span>
         </div>
       )
     },
@@ -105,10 +105,10 @@ export default function AdminLessonsPage() {
         <div className="space-y-2">
             <div className="flex items-center space-x-2 text-[#8B5CF6]">
                 <BookMarked size={20} strokeWidth={2.5} />
-                <span className="font-black uppercase tracking-widest text-[11px]">Nội Dung Bài Học</span>
+                <span className="font-black uppercase tracking-widest text-[11px]">Hệ thống bài giảng</span>
             </div>
             <h1 className="text-4xl font-black text-[#1F2937] tracking-tight">Quản lý Bài học</h1>
-            <p className="text-[#6B7280] font-medium text-lg">Thiết lập chi tiết các bài học cho từng khối lớp và môn học.</p>
+            <p className="text-[#6B7280] font-medium text-lg">Quản lý nội dung bài học và học liệu đi kèm.</p>
         </div>
         <button 
           onClick={() => router.push('/admin/lessons/new')}
@@ -123,7 +123,7 @@ export default function AdminLessonsPage() {
       <section className="bg-white p-6 rounded-[32px] border border-[#E5E7EB] shadow-sm space-y-6">
         <div className="flex items-center space-x-2 text-gray-400 pl-2">
             <Filter size={18} strokeWidth={2.5} />
-            <span className="font-black uppercase tracking-widest text-[10px]">Bộ lọc dữ liệu</span>
+            <span className="font-black uppercase tracking-widest text-[10px]">Lọc theo điều kiện</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
              <div className="md:col-span-2 relative group">

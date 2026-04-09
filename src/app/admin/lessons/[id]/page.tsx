@@ -606,9 +606,9 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
           </div>
 
           <div className="pt-2 border-t border-[#E5E7EB] space-y-2">
-            <p className="text-xs font-black uppercase tracking-widest text-[#6B7280]">Generate tùy chọn từ PDF</p>
+            <p className="text-xs font-black uppercase tracking-widest text-[#6B7280]">Nhập liệu thông minh</p>
             <label className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#EEF2FF] text-[#4F46E5] text-xs font-black uppercase tracking-widest cursor-pointer hover:bg-[#E0E7FF]">
-              <Sparkles size={14} /> {generating ? 'Đang tạo...' : 'Generate từ PDF'}
+              <Sparkles size={14} /> {generating ? 'Đang phân tích...' : 'Tự động nhập từ PDF'}
               <input
                 type="file"
                 accept="application/pdf"
@@ -686,7 +686,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
           {activeTab === 'REFERENCES' && (
             <div className="bg-white border border-[#E5E7EB] rounded-3xl p-5 space-y-4 flex-1 min-h-0 overflow-y-auto">
               {isCreateMode ? (
-                <p className="text-sm text-[#6B7280] font-medium">Lưu bài học trước để thêm tài liệu tham khảo theo lesson.</p>
+                <p className="text-sm text-[#6B7280] font-medium">Lưu bài học để bắt đầu quản lý hồ sơ tài liệu.</p>
               ) : (
                 <>
                   <div className="flex flex-col md:flex-row gap-3 md:items-center">
@@ -1199,12 +1199,7 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                         const rows = getClozeMcqRowsForForm(question.optionsText, blankCount);
                         return (
                           <div className="space-y-3">
-                            {rawBlankCount < 2 && (
-                              <p className="text-xs font-bold text-[#B45309] bg-[#FFFBEB] border border-[#FDE68A] rounded-xl px-3 py-2">
-                                Nội dung cần có ít nhất [1] và [2]. Form đang hiển thị sẵn để bạn nhập trước lựa chọn/đáp án.
-                              </p>
-                            )}
-                            <p className="text-[11px] font-black uppercase tracking-widest text-[#6B7280]">Lựa chọn và đáp án theo từng ô trống</p>
+                            <p className="text-[11px] font-black uppercase tracking-widest text-[#6B7280]">Danh sách đáp án lựa chọn</p>
                             <div className="space-y-3">
                               {Array.from({ length: blankCount }, (_, blankIndex) => (
                                 <div key={blankIndex} className="rounded-xl border border-[#E5E7EB] p-3 space-y-2 bg-[#FAFAFA]">
