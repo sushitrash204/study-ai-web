@@ -17,8 +17,8 @@ import {
   createAdminManualExercise,
 } from '@/services/adminService';
 import type { AdminManualExercisePayload, LessonBlock } from '@/models/adminApi';
-import { getDocumentsBySubject, uploadDocument } from '@/services/documentService';
-import { getExercisesBySubject } from '@/services/exerciseService';
+import { getDocumentsBySubject, uploadDocument, deleteDocument } from '@/services/documentService';
+import { getExercisesBySubject, deleteExercise } from '@/services/exerciseService';
 
 export type LessonForm = {
   title: string;
@@ -379,6 +379,26 @@ export const useAdminLessonEditor = ({ id, isCreateMode }: { id: string; isCreat
     }
   };
 
+  const handleDeleteExercise = async (exerciseId: string) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa bài luyện tập này?')) return;
+    try {
+      await deleteExercise(exerciseId);
+      await refreshRelatedContent(form.subjectId);
+    } catch {
+      window.alert('Không thể xóa bài luyện tập.');
+    }
+  };
+
+  const handleDeleteDocument = async (docId: string) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa tài liệu này?')) return;
+    try {
+      await deleteDocument(docId);
+      await refreshRelatedContent(form.subjectId);
+    } catch {
+      window.alert('Không thể xóa tài liệu.');
+    }
+  };
+
   return {
     state: {
       loading,
@@ -407,6 +427,8 @@ export const useAdminLessonEditor = ({ id, isCreateMode }: { id: string; isCreat
       uploadReferenceDocument,
       uploadReferenceDocuments,
       createManualPracticeExercise,
+      handleDeleteExercise,
+      handleDeleteDocument,
     },
   };
 };

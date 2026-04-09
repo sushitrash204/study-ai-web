@@ -509,6 +509,8 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
     refreshRelatedContent,
     uploadReferenceDocuments,
     createManualPracticeExercise,
+    handleDeleteExercise,
+    handleDeleteDocument,
   } = actions;
 
   const [activeTab, setActiveTab] = useState<'CONTENT' | 'REFERENCES' | 'PRACTICE'>('CONTENT');
@@ -724,19 +726,31 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                   ) : referenceDocuments.length > 0 ? (
                     <div className="space-y-2">
                       {referenceDocuments.map((doc) => (
-                        <a
+                        <div
                           key={doc.id}
-                          href={doc.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center justify-between gap-3 p-3 rounded-xl border border-[#E5E7EB] hover:border-[#C7D2FE] hover:bg-[#FAFAFF]"
+                          className="flex items-center justify-between gap-3 p-3 rounded-xl border border-[#E5E7EB] hover:border-[#C7D2FE] hover:bg-[#FAFAFF] group/doc"
                         >
-                          <div>
+                          <a
+                            href={doc.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex-1"
+                          >
                             <p className="text-sm font-bold text-[#1F2937]">{doc.title}</p>
                             <p className="text-xs text-[#6B7280] font-medium">{doc.displayFileType} • {doc.getFormattedDate()}</p>
+                          </a>
+                          <div className="flex items-center gap-1 opacity-100 xl:opacity-0 group-hover/doc:opacity-100 transition-opacity">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteDocument(doc.id)}
+                              className="p-2 text-[#EF4444] hover:bg-[#FEF2F2] rounded-lg transition-colors"
+                              title="Xóa tài liệu"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                            <Link2 size={14} className="text-[#6B7280] mr-2" />
                           </div>
-                          <Link2 size={14} className="text-[#6B7280]" />
-                        </a>
+                        </div>
                       ))}
                     </div>
                   ) : (
@@ -784,11 +798,21 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                   {practiceExercises.length > 0 ? (
                     <div className="space-y-2">
                       {practiceExercises.map((exercise) => (
-                        <div key={exercise.id} className="p-3 rounded-xl border border-[#E5E7EB]">
-                          <p className="text-sm font-bold text-[#1F2937]">{exercise.title}</p>
-                          <p className="text-xs text-[#6B7280] font-medium">
-                            {exercise.type === 'QUIZ' ? 'Trắc nghiệm' : exercise.type === 'ESSAY' ? 'Tự luận' : 'Tổng hợp'} • {getPublishStatusLabel(exercise.publishStatus)}
-                          </p>
+                        <div key={exercise.id} className="p-3 rounded-xl border border-[#E5E7EB] flex items-center justify-between group/ex">
+                          <div>
+                            <p className="text-sm font-bold text-[#1F2937]">{exercise.title}</p>
+                            <p className="text-xs text-[#6B7280] font-medium">
+                              {exercise.type === 'QUIZ' ? 'Trắc nghiệm' : exercise.type === 'ESSAY' ? 'Tự luận' : 'Tổng hợp'} • {getPublishStatusLabel(exercise.publishStatus)}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteExercise(exercise.id)}
+                            className="p-2 text-[#EF4444] hover:bg-[#FEF2F2] rounded-lg opacity-100 xl:opacity-0 group-hover/ex:opacity-100 transition-opacity"
+                            title="Xóa bài tập"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       ))}
                     </div>
