@@ -1,14 +1,14 @@
 export interface LessonBlock {
     id: string;
-    type: 'header' | 'paragraph' | 'image' | 'math' | 'quote' | 'bullet_list' | 'callout' | 'divider';
+    type: 'header' | 'paragraph' | 'image' | 'math' | 'bullet_list' | 'divider' | 'code';
     data: {
         text?: string;
         url?: string;
         caption?: string;
         expression?: string;
-        author?: string;
         items?: string[];
-        tone?: 'info' | 'success' | 'warning';
+        code?: string;
+        language?: string;
     };
 }
 

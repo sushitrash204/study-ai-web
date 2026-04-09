@@ -42,26 +42,18 @@ const createBlock = (type: LessonBlock['type']): LessonBlock => ({
         ? { text: 'Nội dung đoạn văn...' }
         : type === 'math'
           ? { expression: 'a^2 + b^2 = c^2' }
-          : type === 'quote'
-            ? { text: 'Một trích dẫn truyền cảm hứng...', author: 'Tác giả' }
-            : type === 'bullet_list'
-              ? { items: ['Ý chính 1', 'Ý chính 2', 'Ý chính 3'] }
-              : type === 'callout'
-                ? { text: 'Ghi chú quan trọng', tone: 'info' }
-                : type === 'divider'
-                  ? {}
-                  : { url: '', caption: '' },
+          : type === 'bullet_list'
+            ? { items: ['Ý chính 1', 'Ý chính 2', 'Ý chính 3'] }
+          : type === 'divider'
+            ? {}
+          : type === 'code'
+            ? { code: '// Input your code here\nconsole.log("Hello world");', language: 'javascript' }
+            : { url: '', caption: '' },
 });
 
 const isBlockType = (value: string): value is LessonBlock['type'] => {
-  return value === 'header'
-    || value === 'paragraph'
-    || value === 'math'
-    || value === 'image'
-    || value === 'quote'
-    || value === 'bullet_list'
-    || value === 'callout'
-    || value === 'divider';
+  const validTypes: LessonBlock['type'][] = ['header', 'paragraph', 'math', 'image', 'bullet_list', 'divider', 'code'];
+  return validTypes.includes(value as any);
 };
 
 export const useAdminLessonEditor = ({ id, isCreateMode }: { id: string; isCreateMode: boolean }) => {

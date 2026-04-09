@@ -26,6 +26,7 @@ import {
   Link2,
   RefreshCcw,
   Pencil,
+  Code2,
   X,
 } from 'lucide-react';
 import {
@@ -393,54 +394,28 @@ function SortableBlock({
         </div>
       )}
 
-      {block.type === 'quote' && (
-        <div className="space-y-2">
-          <textarea
-            rows={3}
-            value={block.data.text || ''}
-            onChange={(e) => onUpdate(block.id, { ...block.data, text: e.target.value })}
-            className="w-full px-4 py-3 bg-[#F9FAFA] border border-[#E5E7EB] rounded-xl font-medium"
-            placeholder="Nội dung trích dẫn"
-          />
-          <input
-            value={block.data.author || ''}
-            onChange={(e) => onUpdate(block.id, { ...block.data, author: e.target.value })}
-            className="w-full px-4 py-3 bg-[#F9FAFA] border border-[#E5E7EB] rounded-xl font-medium"
-            placeholder="Tác giả / nguồn"
-          />
-        </div>
-      )}
-
-      {block.type === 'bullet_list' && (
-        <textarea
-          value={(block.data.items || []).join('\n')}
-          onChange={(e) => onUpdate(block.id, {
-            ...block.data,
-            items: e.target.value.split('\n').map((line) => line.trim()).filter(Boolean),
-          })}
-          rows={5}
-          className="w-full px-4 py-3 bg-[#F9FAFA] border border-[#E5E7EB] rounded-xl font-medium"
-          placeholder={'Mỗi dòng là một ý\nÝ 1\nÝ 2\nÝ 3'}
-        />
-      )}
-
-      {block.type === 'callout' && (
+      {block.type === 'code' && (
         <div className="space-y-2">
           <select
-            value={block.data.tone || 'info'}
-            onChange={(e) => onUpdate(block.id, { ...block.data, tone: e.target.value as 'info' | 'success' | 'warning' })}
+            value={block.data.language || 'javascript'}
+            onChange={(e) => onUpdate(block.id, { ...block.data, language: e.target.value })}
             className="w-full px-4 py-3 bg-[#F9FAFA] border border-[#E5E7EB] rounded-xl font-bold"
           >
-            <option value="info">Info</option>
-            <option value="success">Success</option>
-            <option value="warning">Warning</option>
+            <option value="javascript">JavaScript</option>
+            <option value="typescript">TypeScript</option>
+            <option value="python">Python</option>
+            <option value="cpp">C++</option>
+            <option value="java">Java</option>
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="sql">SQL</option>
           </select>
           <textarea
-            rows={3}
-            value={block.data.text || ''}
-            onChange={(e) => onUpdate(block.id, { ...block.data, text: e.target.value })}
-            className="w-full px-4 py-3 bg-[#F9FAFA] border border-[#E5E7EB] rounded-xl font-medium"
-            placeholder="Nội dung ghi chú nổi bật"
+            rows={6}
+            value={block.data.code || ''}
+            onChange={(e) => onUpdate(block.id, { ...block.data, code: e.target.value })}
+            className="w-full px-4 py-3 bg-[#1E1E1E] text-[#D4D4D4] border border-[#333333] rounded-xl font-mono text-sm"
+            placeholder="// Nhập mã nguồn tại đây..."
           />
         </div>
       )}
@@ -680,9 +655,8 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                 <PaletteItem type="paragraph" label="Paragraph" onClick={() => addBlock('paragraph', 'top')} className="bg-[#ECFDF5] text-[#059669]" icon={<AlignLeft size={14} />} />
                 <PaletteItem type="math" label="Math" onClick={() => addBlock('math', 'top')} className="bg-[#FFFBEB] text-[#D97706]" icon={<Sigma size={14} />} />
                 <PaletteItem type="image" label="Image" onClick={() => addBlock('image', 'top')} className="bg-[#EFF6FF] text-[#2563EB]" icon={<ImageIcon size={14} />} />
-                <PaletteItem type="quote" label="Quote" onClick={() => addBlock('quote', 'top')} className="bg-[#FDF2F8] text-[#BE185D]" icon={<Quote size={14} />} />
+                <PaletteItem type="code" label="Code" onClick={() => addBlock('code', 'top')} className="bg-[#F8FAFC] text-[#475569]" icon={<Code2 size={14} />} />
                 <PaletteItem type="bullet_list" label="List" onClick={() => addBlock('bullet_list', 'top')} className="bg-[#ECFEFF] text-[#0E7490]" icon={<List size={14} />} />
-                <PaletteItem type="callout" label="Callout" onClick={() => addBlock('callout', 'top')} className="bg-[#FEF3C7] text-[#B45309]" icon={<AlertCircle size={14} />} />
                 <PaletteItem type="divider" label="Divider" onClick={() => addBlock('divider', 'top')} className="bg-[#F3F4F6] text-[#4B5563]" icon={<Minus size={14} />} />
                 <button type="button" onClick={() => addBlock('paragraph', 'top')} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#F3F4F6] text-[#374151] font-black text-xs uppercase tracking-widest"><Plus size={14} /> Thêm block</button>
               </div>
