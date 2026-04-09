@@ -11,7 +11,7 @@ interface SystemBadgeProps {
 export function SystemBadge({ isSystem, size = 'md' }: SystemBadgeProps) {
   const config = isSystem 
     ? { 
-        label: 'Hệ thống', 
+        label: 'Phổ thông', 
         color: 'text-[#10B981]', 
         bg: 'bg-[#D1FAE5]', 
         dot: 'bg-[#10B981]',

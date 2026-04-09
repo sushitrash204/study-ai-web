@@ -18,7 +18,6 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/admin/common/DataTable';
 import { StatusBadge } from '@/components/admin/common/StatusBadge';
-import { SystemBadge } from '@/components/admin/common/SystemBadge';
 import { Subject } from '@/models/Subject';
 import { useAdminSubjects, PRESET_COLORS } from '@/hooks/admin/useAdminSubjects';
 
@@ -62,11 +61,6 @@ export default function AdminSubjectsPage() {
       render: (item: Subject) => <StatusBadge status={item.status || 'DRAFT'} />
     },
     { 
-      key: 'isSystem', 
-      header: 'Loại',
-      render: (item: Subject) => <SystemBadge isSystem={item.isSystem || false} />
-    },
-    { 
       key: 'createdAt', 
       header: 'Ngày tạo',
       render: (item: Subject) => (
@@ -107,7 +101,7 @@ export default function AdminSubjectsPage() {
         <div className="space-y-2">
             <div className="flex items-center space-x-2 text-[#10B981]">
                 <Layers size={20} strokeWidth={2.5} />
-                <span className="font-black uppercase tracking-widest text-[11px]">Học thuật Hệ Thống</span>
+                <span className="font-black uppercase tracking-widest text-[11px]">Học thuật Phổ Thông</span>
             </div>
             <h1 className="text-4xl font-black text-[#1F2937] tracking-tight">Quản lý Môn học</h1>
             <p className="text-[#6B7280] font-medium text-lg">Phân loại môn học theo đúng khối lớp học tập.</p>
@@ -168,7 +162,7 @@ export default function AdminSubjectsPage() {
                        <h2 className="text-2xl font-black text-[#1F2937] tracking-tight">
                          {state.editingSubject ? 'Chỉnh sửa môn học' : 'Thêm môn học mới'}
                        </h2>
-                       <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Phân bổ môn học vào hệ thống</p>
+                       <p className="text-gray-400 font-bold text-xs uppercase tracking-widest">Phân bổ môn học vào chương trình</p>
                     </div>
                     <button onClick={() => actions.setIsModalOpen(false)} className="p-3 hover:bg-gray-100 rounded-full transition-colors">
                        <X size={24} className="text-gray-400" />

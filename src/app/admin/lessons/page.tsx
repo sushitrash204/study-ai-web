@@ -16,7 +16,6 @@ import {
 } from 'lucide-react';
 import { DataTable } from '@/components/admin/common/DataTable';
 import { StatusBadge } from '@/components/admin/common/StatusBadge';
-import { SystemBadge } from '@/components/admin/common/SystemBadge';
 import { LessonModel } from '@/models/Lesson';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -57,11 +56,6 @@ export default function AdminLessonsPage() {
       key: 'status', 
       header: 'Trạng thái',
       render: (item: LessonModel) => <StatusBadge status={item.status} />
-    },
-    { 
-      key: 'isSystem', 
-      header: 'Loại',
-      render: (item: LessonModel) => <SystemBadge isSystem={item.subject?.isSystem || false} />
     },
     { 
       key: 'createdAt', 

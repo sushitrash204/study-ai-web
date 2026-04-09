@@ -35,7 +35,7 @@ export default function AdminDashboard() {
           <ShieldCheck size={20} strokeWidth={2.5} />
           <span className="font-black uppercase tracking-widest text-[11px]">Hệ thống quản trị</span>
         </div>
-        <h1 className="text-4xl font-black text-[#1F2937] tracking-tight">Tổng quan hệ thống</h1>
+        <h1 className="text-4xl font-black text-[#1F2937] tracking-tight">Tổng quan chương trình</h1>
         <p className="text-[#6B7280] font-medium text-lg">Chào mừng bạn quay trở lại, Admin. Hãy kiểm tra các chỉ số hôm nay nhé.</p>
       </header>
 
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
           onClick={() => actions.navigateTo('/admin/classes')}
         />
         <AdminStatCard 
-          label="Môn học Hệ thống" 
+          label="Chương trình phổ thông" 
           value={state.stats?.content.subjects || 0} 
           icon={BookOpen} 
           color="teal" 
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
            <div className="space-y-4 relative z-10">
               {[
                 { title: "Cấu trúc nội dung", desc: "Luôn bắt đầu từ Khối lớp → Môn học → Bài học để đảm bảo cấu trúc dữ liệu." },
-                { title: "Trạng thái công khai", desc: "Tài liệu ở trạng thái công khai sẽ hiển thị cho tất cả người dùng trong hệ thống." },
+                { title: "Trạng thái công khai", desc: "Tài liệu ở trạng thái công khai sẽ hiển thị cho tất cả người dùng trong ứng dụng." },
                 { title: "Quản lý người dùng", desc: "Cẩn thận khi thay đổi quyền Admin cho người dùng khác." }
               ].map((item, i) => (
                 <div key={i} className="flex space-x-4">

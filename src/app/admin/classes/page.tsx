@@ -138,9 +138,9 @@ export default function AdminClassesPage() {
       {/* Header */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-            <div className="flex items-center space-x-2 text-[#F59E0B]">
-                <Settings2 size={20} strokeWidth={2.5} />
-                <span className="font-black uppercase tracking-widest text-[11px]">Dữ Liệu Hệ Thống</span>
+            <div className="flex items-center space-x-2 text-[#F97316]">
+                <GraduationCap size={20} strokeWidth={2.5} />
+                <span className="font-black uppercase tracking-widest text-[11px]">Dữ Liệu Phổ Thông</span>
             </div>
             <h1 className="text-4xl font-black text-[#1F2937] tracking-tight">Quản lý Khối lớp</h1>
             <p className="text-[#6B7280] font-medium text-lg">Cấu trúc các khối lớp từ 1 đến 12.</p>
@@ -246,7 +246,7 @@ export default function AdminClassesPage() {
                 <h2 className="text-2xl font-black text-[#1F2937] tracking-tight">
                   {state.editingClass ? 'Cập nhật Khối lớp' : 'Thêm Khối lớp Mới'}
                 </h2>
-                <p className="text-gray-500 font-medium">Nhập thông tin chi tiết khối lớp hệ thống.</p>
+                <p className="text-gray-500 font-medium">Nhập thông tin chi tiết khối lớp đào tạo.</p>
              </div>
 
              <form onSubmit={actions.handleSubmit} className="space-y-6">

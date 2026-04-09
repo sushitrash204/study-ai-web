@@ -104,7 +104,7 @@ export default function SubjectListPage() {
                                 onClick={() => setActiveTab('SYSTEM')}
                                 className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all ${activeTab === 'SYSTEM' ? 'bg-white text-violet-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
                             >
-                                Hệ thống
+                                Chương trình phổ thông
                             </button>
                         </div>
                     </div>
