@@ -1,4 +1,6 @@
-import { User } from './User';
+// Auth related interfaces
+
+import { User } from '../models/User';
 
 export interface AuthSessionResponse {
     user: User;
@@ -23,4 +25,3 @@ export interface RegisterPayload {
     password: string;
     confirmPassword: string;
 }
-

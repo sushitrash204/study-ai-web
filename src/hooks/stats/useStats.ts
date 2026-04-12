@@ -8,6 +8,7 @@ export interface UserStats {
     totalDocuments: number;
     totalExercises: number;
     completedExercises: number;
+    totalGroups: number;
 }
 
 export function useStats() {
@@ -17,7 +18,8 @@ export function useStats() {
         mySubjects: 0,
         totalDocuments: 0,
         totalExercises: 0,
-        completedExercises: 0
+        completedExercises: 0,
+        totalGroups: 0
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);

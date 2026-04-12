@@ -13,6 +13,7 @@ export const useExerciseSession = (exercise: Exercise | null) => {
     const [submitted, setSubmitted] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [essayEvaluation, setEssayEvaluation] = useState<any>(null);
+    const [backendResult, setBackendResult] = useState<any>(null);
 
     const questions = exercise?.questions ?? [];
 
@@ -67,6 +68,7 @@ export const useExerciseSession = (exercise: Exercise | null) => {
             const result = await exActions.handleSubmitExercise(exercise.id, answersToSubmit);
             if (result) {
                 setSubmitted(true);
+                setBackendResult(result);
                 if (result.essayEvaluation) {
                     setEssayEvaluation(result.essayEvaluation);
                 }
@@ -85,6 +87,7 @@ export const useExerciseSession = (exercise: Exercise | null) => {
         setEssayAnswers({});
         setSubmitted(false);
         setEssayEvaluation(null);
+        setBackendResult(null);
     }, []);
 
     const getQuestionPoint = useCallback((question: Question, fallbackPoint: number) => {
@@ -148,6 +151,7 @@ export const useExerciseSession = (exercise: Exercise | null) => {
             submitted,
             submitting,
             essayEvaluation,
+            backendResult,
             questions,
         },
         actions: {
@@ -161,6 +165,7 @@ export const useExerciseSession = (exercise: Exercise | null) => {
             calcScoreOnTen,
             setEssayAnswers,
             setEssayEvaluation,
+            setBackendResult,
             setCurrentIndex,
             setSubmitted,
             setUserAnswers,

@@ -1,9 +1,18 @@
 import api from './api';
 import { Exercise } from '../models/Exercise';
-import { Submission, SubmitAnswer } from '../models/Submission';
+import { Submission } from '../models/Submission';
+import { SubmitAnswer } from '../types';
 
 export const getExercisesBySubject = async (subjectId: string): Promise<Exercise[]> => {
     const response = await api.get(`/exercises/subject/${subjectId}`);
+    if (Array.isArray(response.data)) {
+        return response.data.map((item: any) => new Exercise(item));
+    }
+    return [];
+};
+
+export const getAllExercises = async (): Promise<Exercise[]> => {
+    const response = await api.get('/exercises');
     if (Array.isArray(response.data)) {
         return response.data.map((item: any) => new Exercise(item));
     }

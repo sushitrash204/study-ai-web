@@ -1,23 +1,3 @@
-export interface DeleteDocumentResponse {
-    message: string;
-    deletedDocumentId: string;
-    deletedEssayExerciseCount: number;
-}
-
-export interface DocumentSummary {
-    documentId: string;
-    title: string;
-    summary: string;
-    sourceLength: number;
-}
-
-export interface DocumentChatResponse {
-    documentId: string;
-    title: string;
-    answer: string;
-    sourceLength: number;
-}
-
 export class Document {
     id: string;
     title: string;
@@ -29,6 +9,10 @@ export class Document {
     isSystem: boolean;
     userId: string;
     createdAt?: string;
+    subject?: {
+        id: string;
+        name: string;
+    } | null;
 
     constructor(data: any) {
         this.id = data?.id || '';
@@ -41,6 +25,7 @@ export class Document {
         this.isSystem = data?.isSystem || false;
         this.userId = data?.userId || '';
         this.createdAt = data?.createdAt;
+        this.subject = data?.subject || null;
     }
 
     get isPdf(): boolean {

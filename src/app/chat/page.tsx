@@ -65,7 +65,16 @@ function ChatContent() {
   };
 
   return (
-    <div className="flex-1 flex flex-col md:flex-row h-screen min-h-0 max-h-screen overflow-hidden font-sans relative">
+    <div className="flex-1 flex flex-col md:flex-row h-full min-h-0 overflow-hidden font-sans relative">
+      <style jsx global>{`
+        .hide-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .hide-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
       {/* Sidebar - Desktop (Thread Context) */}
       <aside className={cn(
         "hidden md:flex bg-white border-r border-[#E5E7EB] flex-col overflow-hidden shadow-sm z-10 shrink-0 transition-all duration-300 ease-in-out",
@@ -193,7 +202,7 @@ function ChatContent() {
         {/* Messages */}
         <div 
           ref={scrollRef}
-          className="flex-1 overflow-y-auto p-4 md:p-8 space-y-2 md:space-y-4 scroll-smooth"
+          className="flex-1 overflow-y-auto p-4 md:p-8 space-y-2 md:space-y-4 scroll-smooth hide-scrollbar"
         >
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center max-w-md mx-auto space-y-6">

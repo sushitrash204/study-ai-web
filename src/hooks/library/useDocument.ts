@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import * as documentService from '../../services/documentService';
 import { useDocumentStore } from '../../store/documentStore';
 import { Document } from '../../models/Document';
+import { DocumentData } from '../../types';
 
 export const useDocument = (options: { autoFetch?: boolean } = {}) => {
     const { autoFetch = false } = options;

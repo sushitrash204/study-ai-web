@@ -28,11 +28,16 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
     const compactDescription = String(item.description || 'Chưa có mô tả').replace(/\s+/g, ' ').trim();
     const latestSubmission = item.latestSubmission;
     const scoreText = item.formattedScore;
-    const correctCount = latestSubmission?.correctCount ?? 0;
-    const wrongCount = latestSubmission?.wrongCount ?? 0;
+    const scoreValue = latestSubmission?.score ?? 0;
+    
+    // Normalize counts to align with score for a better UX, especially with partial points
     const totalCount = latestSubmission?.totalCount ?? 0;
-    const correctRatio = totalCount > 0 ? (correctCount / totalCount) * 100 : 0;
-    const displayWrongCount = Math.max(totalCount - correctCount, 0);
+    const displayCorrectCount = scoreText && totalCount > 0 
+        ? Math.round((scoreValue / 10) * totalCount) 
+        : (latestSubmission?.correctCount ?? 0);
+    
+    const correctRatio = totalCount > 0 ? (displayCorrectCount / totalCount) * 100 : 0;
+    const displayWrongCount = Math.max(totalCount - displayCorrectCount, 0);
     const wrongRatio = totalCount > 0 ? (displayWrongCount / totalCount) * 100 : 0;
     const submittedTimeText = item.formattedSubmissionTime;
 
@@ -78,7 +83,7 @@ export const ExerciseCard: React.FC<ExerciseCardProps> = ({
                         </div>
 
                         <div className="flex justify-between items-center gap-2 flex-wrap">
-                            <span className="text-[11px] font-bold text-[#059669]">Đúng {correctCount}</span>
+                            <span className="text-[11px] font-bold text-[#059669]">Đúng {displayCorrectCount}</span>
                             <span className="text-[11px] font-bold text-[#DC2626]">Sai {displayWrongCount}</span>
                         </div>
 

@@ -2,7 +2,8 @@ import { useState, useCallback, useMemo } from 'react';
 import * as exerciseService from '../../services/exerciseService';
 import { useExerciseStore } from '../../store/exerciseStore';
 import { Exercise } from '../../models/Exercise';
-import { Submission, SubmitAnswer } from '../../models/Submission';
+import { Submission } from '../../models/Submission';
+import { SubmitAnswer } from '../../types';
 
 export const useExercise = () => {
     const { 

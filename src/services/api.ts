@@ -11,8 +11,13 @@ const api = axios.create({
 
 api.interceptors.request.use(
     async (config) => {
-        // Get token from RAM (Zustand store)
-        const token = useAuthStore.getState().accessToken;
+        // Get token from RAM (Zustand store) or fallback to localStorage
+        let token = useAuthStore.getState().accessToken;
+        
+        if (!token && typeof window !== 'undefined') {
+            token = localStorage.getItem('token');
+        }
+
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

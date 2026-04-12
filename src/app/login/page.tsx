@@ -44,9 +44,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9FAFA] flex flex-col items-center justify-center p-6 font-sans">
-      <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div className="bg-white border border-[#E5E7EB] rounded-[32px] p-8 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.05)]">
+    <div className="min-h-screen bg-[#F9FAFA] flex flex-col items-center justify-center p-6 font-sans" suppressHydrationWarning>
+      <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500" suppressHydrationWarning>
+        <div className="bg-white border border-[#E5E7EB] rounded-[32px] p-8 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.05)]" suppressHydrationWarning>
           <header className="text-center mb-10">
             <div className="w-16 h-16 bg-[#F5F3FF] rounded-[20px] shadow-sm flex items-center justify-center mx-auto mb-6 border border-[#8B5CF6]/20">
                <Lock className="text-[#8B5CF6]" size={32} strokeWidth={1.5} />

@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import * as documentService from '@/services/documentService';
-import { useExercise } from '@/hooks/exercise/useExercise';
+import { useExercises } from '@/hooks/exercises/useExercises';
 import { Exercise } from '@/models/Exercise';
 import { Document } from '@/models/Document';
 
 export const useSubjectDetail = (subjectId: string) => {
     const router = useRouter();
-    const { state: { exercisesBySubject }, actions: exActions } = useExercise();
+    const { state: { exercisesBySubject }, actions: exActions } = useExercises();
     
     const exercises = exercisesBySubject[subjectId] || [];
     const [loading, setLoading] = useState(true);

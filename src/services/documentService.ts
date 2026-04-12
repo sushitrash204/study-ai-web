@@ -1,5 +1,6 @@
 import api from './api';
-import { Document, DeleteDocumentResponse, DocumentChatResponse } from '../models/Document';
+import { Document } from '../models/Document';
+import { DeleteDocumentResponse, DocumentChatResponse, DocumentSummary } from '../types/document';
 
 export const getAllDocuments = async (): Promise<Document[]> => {
     const response = await api.get('/documents');

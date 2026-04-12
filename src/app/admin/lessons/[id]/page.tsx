@@ -46,6 +46,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import MathView from '@/components/common/MathView';
 import { useAdminLessonEditor } from '@/hooks/admin/useAdminLessonEditor';
+import { generateLessonExerciseDraft } from '@/services/adminService';
 import type { LessonBlock } from '@/models/adminApi';
 
 type PracticeQuestionDraft = {
@@ -518,6 +519,12 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
   const [practicePublishStatus, setPracticePublishStatus] = useState<'DRAFT' | 'PUBLIC'>(form.status || 'DRAFT');
   const [practiceQuestions, setPracticeQuestions] = useState<PracticeQuestionDraft[]>([createPracticeQuestionDraft()]);
 
+  const [isGenDraftModalOpen, setIsGenDraftModalOpen] = useState(false);
+  const [genDraftType, setGenDraftType] = useState<ExerciseDraftType>('MIXED');
+  const [genDraftCount, setGenDraftCount] = useState(5);
+  const [genDraftDifficulty, setGenDraftDifficulty] = useState<'EASY' | 'MEDIUM' | 'HARD'>('MEDIUM');
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
+
   const practiceTotalPoints = normalizePointValue(
     practiceQuestions.reduce((sum, item) => sum + (Number.isFinite(item.points) ? item.points : 0), 0)
   );
@@ -777,6 +784,14 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
                       className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#FEF3C7] text-[#B45309] text-xs font-black uppercase tracking-widest hover:bg-[#FDE68A] disabled:opacity-60"
                     >
                       <Plus size={14} /> {creatingPractice ? 'Đang tạo...' : 'Tạo bài luyện tập thủ công'}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={creatingPractice || isGeneratingDraft}
+                      onClick={() => setIsGenDraftModalOpen(true)}
+                      className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#F5F3FF] text-[#7C3AED] text-xs font-black uppercase tracking-widest hover:bg-[#E0E7FF] disabled:opacity-60"
+                    >
+                      <Sparkles size={14} /> {isGeneratingDraft ? 'Đang phân tích...' : 'Tạo bằng AI (từ Bài học)'}
                     </button>
                     <button
                       type="button"
@@ -1478,6 +1493,145 @@ export default function AdminLessonEditorPage({ params }: { params: Promise<{ id
               >
                 {uploadingReference ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                 {uploadingReference ? 'Đang tải...' : 'Tải tài liệu'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isGenDraftModalOpen && (
+        <div className="fixed inset-0 z-[60] bg-[#111827]/45 backdrop-blur-sm p-4 md:p-6 flex items-center justify-center">
+          <div className="w-full max-w-lg rounded-3xl border border-[#E5E7EB] bg-white shadow-2xl p-5 md:p-6 space-y-5 animate-in zoom-in duration-200">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-black text-[#1F2937]">Tạo bài luyện tập AI (Draft Mode)</h3>
+                <p className="text-sm text-[#6B7280] font-medium">Hệ thống sẽ lấy nội dung bài học để sinh bộ câu hỏi và điền trực tiếp vào form cho bạn chỉnh sửa.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => !isGeneratingDraft && setIsGenDraftModalOpen(false)}
+                className="p-2 rounded-xl text-[#6B7280] hover:bg-[#F3F4F6]"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-black uppercase tracking-widest text-[#6B7280]">Loại bài tập</label>
+                <select
+                  value={genDraftType}
+                  onChange={(e) => setGenDraftType(e.target.value as ExerciseDraftType)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#E5E7EB] bg-[#F9FAFA] font-bold text-sm"
+                >
+                  <option value="QUIZ">Trắc nghiệm</option>
+                  <option value="ESSAY">Tự luận</option>
+                  <option value="MIXED">Tổng hợp</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-black uppercase tracking-widest text-[#6B7280]">Số lượng câu hỏi sinh ra</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={40}
+                  value={genDraftCount}
+                  onChange={(e) => setGenDraftCount(Number(e.target.value))}
+                  className="w-full px-4 py-3 rounded-xl border border-[#E5E7EB] bg-[#F9FAFA] font-bold text-sm"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-black uppercase tracking-widest text-[#6B7280]">Độ khó mong muốn</label>
+                <select
+                  value={genDraftDifficulty}
+                  onChange={(e) => setGenDraftDifficulty(e.target.value as any)}
+                  className="w-full px-4 py-3 rounded-xl border border-[#E5E7EB] bg-[#F9FAFA] font-bold text-sm"
+                >
+                  <option value="EASY">Dễ</option>
+                  <option value="MEDIUM">Trung bình</option>
+                  <option value="HARD">Khó</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <button
+                type="button"
+                disabled={isGeneratingDraft}
+                onClick={() => setIsGenDraftModalOpen(false)}
+                className="px-4 py-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#F9FAFA] text-xs font-black uppercase tracking-widest text-[#4B5563]"
+              >
+                Hủy
+              </button>
+              <button
+                type="button"
+                disabled={isGeneratingDraft || !id}
+                onClick={async () => {
+                  try {
+                    setIsGeneratingDraft(true);
+                    const aiResult: any = await generateLessonExerciseDraft(id as string, {
+                      type: genDraftType,
+                      questionCount: genDraftCount,
+                      difficulty: genDraftDifficulty,
+                    });
+                    
+                    if (aiResult && aiResult.questions) {
+                        setEditingExerciseId(null);
+                        setPracticeTitle(aiResult.exerciseTitle || form.title + ' (AI Draft)');
+                        setPracticeDescription(aiResult.description || '');
+                        setPracticeType(aiResult.type || genDraftType);
+                        setPracticeDifficulty(genDraftDifficulty);
+                        setPracticePublishStatus('DRAFT');
+                        
+                        const draftedQuestions = (aiResult.questions || []).map((q: any) => {
+                            const parseAudioFromContentTmp = (content: string) => {
+                                const match = content.match(/^\[AUDIO:([a-zA-Z-]+)\]([\s\S]*?)\[\/AUDIO\]\n?/i);
+                                if (!match) return { script: '', lang: '', remaining: content };
+                                return { lang: match[1], script: match[2].trim(), remaining: content.replace(match[0], '').trim() };
+                            };
+                            const serializeClozeRowsTmp = (rows: string[][]) => rows.map(r => r.join(' | ')).join('\n');
+                            const serializeAnswersTmp = (ans: string[]) => ans.join(', ');
+
+                            const { script, lang, remaining } = parseAudioFromContentTmp(q.content);
+                            let optionsText = '';
+                            let correctAnswerText = '';
+
+                            if (q.type === 'MULTIPLE_CHOICE') {
+                                optionsText = (q.options || []).join('\n');
+                                correctAnswerText = q.correctAnswer;
+                            } else if (q.type === 'CLOZE_MCQ') {
+                                optionsText = serializeClozeRowsTmp(q.options || []);
+                                correctAnswerText = serializeAnswersTmp(q.correctAnswer || []);
+                            } else if (q.type === 'CLOZE_TEXT') {
+                                correctAnswerText = serializeAnswersTmp(q.correctAnswer || []);
+                            }
+
+                            return {
+                                id: `ai-q-${Math.random()}`,
+                                content: remaining,
+                                type: q.type as PracticeQuestionType,
+                                optionsText,
+                                correctAnswerText,
+                                hasAudio: !!script,
+                                audioLang: lang || 'en',
+                                audioScript: script || '',
+                                points: q.points || 1,
+                            };
+                        });
+                        setPracticeQuestions(draftedQuestions.length ? draftedQuestions : [createPracticeQuestionDraftForExerciseType(genDraftType)]);
+                        setIsGenDraftModalOpen(false);
+                        setIsPracticeModalOpen(true);
+                    }
+                  } catch(e: any) {
+                    window.alert('Lỗi tạo đề AI: ' + (e?.response?.data?.message || e.message || 'Vui lòng kiểm tra lại kết nối.'));
+                  } finally {
+                    setIsGeneratingDraft(false);
+                  }
+                }}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#8B5CF6] text-white text-xs font-black uppercase tracking-widest hover:bg-[#7C3AED] disabled:opacity-60"
+              >
+                {isGeneratingDraft ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />} 
+                {isGeneratingDraft ? 'Đang phân tích...' : 'Bắt đầu sinh'}
               </button>
             </div>
           </div>

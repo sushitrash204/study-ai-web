@@ -1,5 +1,10 @@
+// Chat related interfaces
+
+export type ChatRole = 'user' | 'assistant';
+export type ChatSender = 'user' | 'bot';
+
 export interface ChatHistoryItem {
-    role: 'user' | 'assistant';
+    role: ChatRole;
     text: string;
 }
 
@@ -10,7 +15,7 @@ export interface ChatResponse {
 export interface ChatMessage {
     id: string;
     text: string;
-    sender: 'user' | 'bot';
+    sender: ChatSender;
     createdAt?: Date;
 }
 

@@ -1,15 +1,5 @@
 import { Question } from './Question';
 import { Submission } from './Submission';
-export interface LatestSubmissionSummary {
-    id: string;
-    userId?: string | null;
-    score: number | null;
-    status: 'SUBMITTED' | 'GRADED';
-    submittedAt: string;
-    correctCount: number;
-    wrongCount: number;
-    totalCount: number;
-}
 
 export class Exercise {
     id: string;
@@ -26,8 +16,11 @@ export class Exercise {
     subjectId: string;
     userId: string;
     latestSubmission?: Submission;
+    subject?: {
+        id: string;
+        name: string;
+    } | null;
 
-    // Dùng cho ExerciseDetail
     // Dùng cho ExerciseDetail
     questions?: Question[];
     submissionHistory?: Submission[];
@@ -47,12 +40,13 @@ export class Exercise {
         this.subjectId = data?.subjectId || '';
         this.userId = data?.userId || '';
         this.latestSubmission = data?.latestSubmission ? new Submission(data.latestSubmission) : undefined;
-        this.questions = Array.isArray(data?.questions) 
+        this.questions = Array.isArray(data?.questions)
             ? data.questions.map((q: any) => new Question(q))
             : undefined;
         this.submissionHistory = Array.isArray(data?.submissionHistory)
             ? data.submissionHistory.map((s: any) => new Submission(s))
             : undefined;
+        this.subject = data?.subject || null;
     }
 
     get isCompleted(): boolean {

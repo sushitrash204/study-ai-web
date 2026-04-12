@@ -7,6 +7,7 @@ interface ExerciseSessionState {
         scoreOnTen: number;
         items: any[];
     } | null;
+    backendResult?: any;
     questions: Question[];
 }
 
@@ -20,12 +21,13 @@ interface SessionActions {
  * This keeps the UI component clean of heavy calculation logic.
  */
 export const useExerciseResult = (session: ExerciseSessionState, actions: SessionActions) => {
-    const { userAnswers, questions, essayEvaluation } = session;
+    const { userAnswers, questions, backendResult } = session;
 
     const results = useMemo(() => {
         const total = questions.length;
-        const correctCount = actions.calcCorrectCount();
-        const scoreOnTen = essayEvaluation ? essayEvaluation.scoreOnTen : actions.calcScoreOnTen();
+        // Prioritize backend calculated values for accuracy, fallback to client calculation
+        const correctCount = backendResult?.correctCount ?? actions.calcCorrectCount();
+        const scoreOnTen = backendResult?.score != null ? Number(backendResult.score) : actions.calcScoreOnTen();
         
         const answeredCount = questions.reduce(
             (count, q) => count + (userAnswers[q.id] ? 1 : 0),
@@ -85,7 +87,7 @@ export const useExerciseResult = (session: ExerciseSessionState, actions: Sessio
             performance,
             scoreChips
         };
-    }, [questions, userAnswers, essayEvaluation, actions]);
+    }, [questions, userAnswers, backendResult, actions]);
 
     return results;
 };

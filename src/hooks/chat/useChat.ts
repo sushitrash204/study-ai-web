@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useChatStore } from '../../store/chatStore';
 import * as chatService from '../../services/chatService';
 import * as documentService from '../../services/documentService';
-import { ChatMessage, ActiveDocumentContext } from '../../models/Chat';
+import { ChatMessage, ActiveDocumentContext } from '../../types/chat';
 
 let messageSequence = 0;
 const buildMessageId = (prefix: string) => {

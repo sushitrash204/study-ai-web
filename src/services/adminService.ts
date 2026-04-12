@@ -118,6 +118,18 @@ export const updateAdminManualExercise = async (id: string, payload: AdminManual
     return response.data;
 };
 
+export const generateLessonExerciseDraft = async (
+    lessonId: string,
+    payload: {
+        type: 'QUIZ' | 'ESSAY' | 'MIXED';
+        questionCount: number;
+        difficulty?: 'EASY' | 'MEDIUM' | 'HARD';
+    }
+) => {
+    const response = await api.post(`/admin/lessons/${lessonId}/generate-exercise-draft`, payload);
+    return response.data;
+};
+
 export const generateLessonBlocksFromPdf = async (file: File, titleHint?: string): Promise<LessonBlock[]> => {
     const formData = new FormData();
     formData.append('file', file);

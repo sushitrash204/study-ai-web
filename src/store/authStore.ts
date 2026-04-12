@@ -63,6 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             isAuthenticated: true
         });
         await storage.setItem('user', JSON.stringify(user));
+        await storage.setItem('token', accessToken);
     },
 
     updateUser: async (user) => {
@@ -84,6 +85,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             isAuthenticated: false
         });
         await storage.removeItem('user');
+        await storage.removeItem('token');
     }
 }));
 

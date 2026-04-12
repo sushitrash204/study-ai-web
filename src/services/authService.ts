@@ -1,6 +1,6 @@
 import api from './api';
 import { User } from '../models/User';
-import { AuthSessionResponse, UpdateProfileResponse, ChangePasswordResponse, RegisterPayload } from '../models/AuthModel';
+import { AuthSessionResponse, UpdateProfileResponse, ChangePasswordResponse, RegisterPayload } from '../types/auth';
 
 const getErrorMessage = (error: any, fallbackMessage: string) => {
     return error.response?.data?.message || fallbackMessage;

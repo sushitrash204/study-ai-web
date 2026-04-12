@@ -18,6 +18,8 @@ import MCQReviewDetail from '@/components/exercise/MCQReviewDetail';
 import EssayReviewDetail from '@/components/exercise/EssayReviewDetail';
 import ClozeReviewDetail from '@/components/exercise/ClozeReviewDetail';
 import AudioPlayer from '@/components/exercise/AudioPlayer';
+import ShareResultModal from '@/components/exercise/ShareResultModal';
+import { Share2 } from 'lucide-react';
 
 function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)); }
 
@@ -61,6 +63,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
 
     const [exercise, setExercise] = useState<Exercise | null>(null);
     const [loading, setLoading] = useState(true);
+    const [showShareModal, setShowShareModal] = useState(false);
 
     const { state: session, actions: sessionActions } = useExerciseSession(exercise);
     const {
@@ -105,6 +108,7 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                     if (latestSubmission.essayEvaluation) {
                         sessionActions.setEssayEvaluation(latestSubmission.essayEvaluation);
                     }
+                    sessionActions.setBackendResult(latestSubmission);
                 }
             } catch {
                 router.back();
@@ -163,12 +167,21 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                         <ArrowLeft size={24} strokeWidth={2.5} />
                     </button>
                     <h1 className="font-extrabold text-[#1F2937] text-lg">Kết quả</h1>
-                    <button
-                        onClick={() => { sessionActions.resetSession(); setLoading(true); window.location.reload(); }}
-                        className="p-2 hover:bg-[#F5F3FF] rounded-full text-[#8B5CF6]"
-                    >
-                        <RotateCcw size={20} strokeWidth={2.5} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setShowShareModal(true)}
+                            className="p-2 hover:bg-[#F5F3FF] rounded-full text-[#8B5CF6]"
+                            title="Chia sẻ kết quả"
+                        >
+                            <Share2 size={20} strokeWidth={2.5} />
+                        </button>
+                        <button
+                            onClick={() => { sessionActions.resetSession(); setLoading(true); window.location.reload(); }}
+                            className="p-2 hover:bg-[#F5F3FF] rounded-full text-[#8B5CF6]"
+                        >
+                            <RotateCcw size={20} strokeWidth={2.5} />
+                        </button>
+                    </div>
                 </header>
 
                 <div className="flex-1 overflow-y-auto max-w-3xl mx-auto w-full p-4 md:p-8 space-y-6 pb-24">
@@ -403,6 +416,20 @@ export default function ExerciseDetailPage({ params }: { params: Promise<{ id: s
                         </button>
                     </div>
                 </div>
+
+                {/* Share Result Modal */}
+                <ShareResultModal
+                    isOpen={showShareModal}
+                    onClose={() => setShowShareModal(false)}
+                    exerciseId={exerciseId}
+                    submissionId={exercise.latestSubmission?.id || ''}
+                    score={scoreOnTen}
+                    totalQuestions={total}
+                    correctCount={correctCount}
+                    onShared={() => {
+                        // Optionally refresh or show toast
+                    }}
+                />
             </main>
         );
     }

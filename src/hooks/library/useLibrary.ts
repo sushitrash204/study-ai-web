@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuthStore } from '../../store/authStore';
-import { useExercise } from '../exercise/useExercise';
-import { useDocument } from './useDocument';
+import { useExercises } from '../exercises/useExercises';
+import { useDocuments } from '../documents/useDocuments';
 import { useSubjects } from '../subject/useSubjects';
 import { Document } from '../../models/Document';
 
@@ -15,14 +15,14 @@ export interface Section {
 
 export const useLibrary = () => {
     const { isAuthenticated } = useAuthStore();
-    const { state: { documents, isLoading: docLoading, isUploading, isRefreshing: docRefreshing }, actions: docActions } = useDocument({ autoFetch: isAuthenticated });
-    
-    const { state: { subjects, systemSubjects, classes, isLoading: subLoading, isRefreshing: subRefreshing }, actions: subActions } = useSubjects({ 
-        type: 'BOTH', 
-        autoFetch: isAuthenticated 
+    const { state: { documents, isLoading: docLoading, isUploading, isRefreshing: docRefreshing }, actions: docActions } = useDocuments({ autoFetch: isAuthenticated });
+
+    const { state: { subjects, systemSubjects, classes, isLoading: subLoading, isRefreshing: subRefreshing }, actions: subActions } = useSubjects({
+        type: 'BOTH',
+        autoFetch: isAuthenticated
     });
-    
-    const { actions: exActions } = useExercise();
+
+    const { actions: exActions } = useExercises();
 
     const [sections, setSections] = useState<Section[]>([]);
     const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
@@ -119,6 +119,8 @@ export const useLibrary = () => {
             setSelectedUploadSubjectId,
             setCustomTitle,
             handleUpload,
+            handleDeleteDocument: docActions.handleDeleteDocument,
+            handleUpdateTitle: docActions.handleUpdateTitle,
             onRefresh: () => {
                 docActions.fetchDocuments(true);
                 subActions.fetchAll(true);

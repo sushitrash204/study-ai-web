@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
+import { Toaster } from 'react-hot-toast';
 
 const nunito = Nunito({
   subsets: ["latin", "vietnamese"],
@@ -29,13 +30,35 @@ export default function RootLayout({
       style={{ colorScheme: 'light' }}
       suppressHydrationWarning
     >
-      <body 
+      <body
         className="min-h-full flex flex-col bg-[#F9FAFA] text-[#1F2937] overflow-x-hidden"
         suppressHydrationWarning
       >
         <MainLayout>
           {children}
         </MainLayout>
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10B981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#EF4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
       </body>
     </html>
   );

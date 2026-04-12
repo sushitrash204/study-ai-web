@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { ChatMessage, ActiveDocumentContext } from '../models/Chat';
+import { ChatMessage, ActiveDocumentContext } from '../types/chat';
 
 interface ChatState {
     messages: ChatMessage[];
