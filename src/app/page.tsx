@@ -39,7 +39,7 @@ export default function Dashboard() {
       try {
          setIsGroupsLoading(true);
          const res = await studyGroupService.listStudyGroups(1, 3);
-         setRecommendedGroups(res.data || []);
+         setRecommendedGroups(res.groups || []);
       } catch (error) {
          console.error('Error fetching recommended groups:', error);
       } finally {
