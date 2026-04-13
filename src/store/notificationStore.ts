@@ -177,10 +177,20 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
   // Add notification từ socket
   addNotification: (notification) => {
-    set((state) => ({
-      notifications: [new NotificationModel(notification), ...state.notifications],
-      unreadCount: state.unreadCount + 1,
-    }));
+    console.log('📦 STORE_ACTION: Adding notification to store', notification);
+    set((state) => {
+      // Tránh trùng lặp
+      const exists = state.notifications.some(n => n.id === notification.id);
+      if (exists) {
+        console.log('📦 STORE_ACTION: Notification already exists, skipping');
+        return state;
+      }
+      
+      return {
+        notifications: [new NotificationModel(notification), ...state.notifications],
+        unreadCount: state.unreadCount + 1,
+      };
+    });
   },
 
   // Mark as read local

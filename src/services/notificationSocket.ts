@@ -61,8 +61,12 @@ export const initializeSocket = (
 
     // Nhận thông báo mới
     socket.on('server:notification', (data: SocketNotificationEvent) => {
-      console.log('📬 New notification received:', data.notification);
-      callbacks.onNotification?.(data.notification);
+      console.log('%c📬 SOCKET_RECEIVE: New notification from server!', 'background: #222; color: #bada55; font-size: 14px', data);
+      if (data.notification) {
+        callbacks.onNotification?.(data.notification);
+      } else {
+        console.warn('📬 Received server:notification but data.notification is missing', data);
+      }
     });
 
     // Thông báo đã đọc

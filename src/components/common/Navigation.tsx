@@ -28,6 +28,11 @@ export function TopNavbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { logout, user } = useAuthStore();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const baseNavItems: NavItem[] = [
     { icon: LayoutDashboard, label: 'Tổng quan', href: '/' },
@@ -82,7 +87,7 @@ export function TopNavbar() {
         {/* Right Actions */}
         <div className="flex items-center space-x-4 shrink-0">
           {/* Admin Panel Button - Only for ADMIN role */}
-          {user?.role === 'ADMIN' && (
+          {mounted && user?.role === 'ADMIN' && (
             <button
               onClick={() => router.push('/admin')}
               className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl font-bold text-xs shadow-lg shadow-violet-200 hover:shadow-xl hover:scale-105 transition-all group shrink-0"
@@ -109,7 +114,7 @@ export function TopNavbar() {
           </div>
 
           {/* Admin Quick Access - Mobile/Tablet */}
-          {user?.role === 'ADMIN' && (
+          {mounted && user?.role === 'ADMIN' && (
             <button
               onClick={() => router.push('/admin')}
               className="lg:hidden p-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl shadow-lg shadow-violet-200 hover:shadow-xl hover:scale-105 transition-all"
@@ -123,7 +128,7 @@ export function TopNavbar() {
             className="w-10 h-10 rounded-xl overflow-hidden ring-2 ring-gray-100 hover:ring-indigo-200 transition-all hover:scale-105 active:scale-95"
           >
             <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-black text-sm">
-              {user?.firstName?.charAt(0) || 'U'}
+              {mounted ? (user?.firstName?.charAt(0) || 'U') : 'U'}
             </div>
           </button>
         </div>
@@ -135,13 +140,18 @@ export function TopNavbar() {
 export function MobileHeader() {
   const { user } = useAuthStore();
   const router = useRouter();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-xl sticky top-0 z-40 border-b border-gray-100">
       <div className="flex flex-col">
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-0.5">Xin chào,</p>
         <h1 className="text-lg font-black text-gray-900 leading-none">
-          {user?.firstName} {user?.lastName}
+          {mounted ? `${user?.firstName || ''} ${user?.lastName || ''}` : '...'}
         </h1>
       </div>
       <div className="flex items-center space-x-3">
@@ -150,7 +160,7 @@ export function MobileHeader() {
           onClick={() => router.push('/profile')}
           className="w-10 h-10 rounded-2xl overflow-hidden ring-2 ring-gray-50 flex items-center justify-center bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-black text-xs shadow-lg shadow-indigo-100"
         >
-          {user?.firstName?.charAt(0) || 'U'}
+          {mounted ? (user?.firstName?.charAt(0) || 'U') : 'U'}
         </button>
       </div>
     </header>

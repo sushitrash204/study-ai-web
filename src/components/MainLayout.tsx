@@ -29,13 +29,20 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
   const isChat = pathname === '/chat';
   const isImmersive = isDetail || isChat;
 
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   if (isNoNav || isAdminRoute) {
     return <AuthInitializer>{children}</AuthInitializer>;
   }
 
   return (
     <AuthInitializer>
-      <div className={cn(
+      <div 
+        suppressHydrationWarning
+        className={cn(
         "bg-[#FAFAFA] text-[#1F2937] flex flex-col font-sans h-screen overflow-hidden"
       )}>
         {/* Mobile Header */}
@@ -52,7 +59,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </main>
 
         {/* Mobile Bottom Nav */}
-        {!isDetail && !isChat && <BottomNav />}
+        {mounted && !isDetail && !isChat && <BottomNav />}
       </div>
     </AuthInitializer>
   );
