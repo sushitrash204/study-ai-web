@@ -1,8 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import * as studyGroupService from '../../services/studyGroupService';
 import {
-  StudyGroupData,
-  GroupMemberData,
+  StudyGroup,
+  GroupMember,
   GroupMessageData,
   GroupInviteLinkData,
   CreateGroupPayload,
@@ -20,10 +20,10 @@ export const useStudyGroups = (options: { autoFetch?: boolean } = {}) => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [myGroups, setMyGroups] = useState<StudyGroupData[]>([]);
-  const [publicGroups, setPublicGroups] = useState<StudyGroupData[]>([]);
-  const [currentGroup, setCurrentGroup] = useState<StudyGroupData | null>(null);
-  const [groupMembers, setGroupMembers] = useState<GroupMemberData[]>([]);
+  const [myGroups, setMyGroups] = useState<StudyGroup[]>([]);
+  const [publicGroups, setPublicGroups] = useState<StudyGroup[]>([]);
+  const [currentGroup, setCurrentGroup] = useState<StudyGroup | null>(null);
+  const [groupMembers, setGroupMembers] = useState<GroupMember[]>([]);
   const [groupMessages, setGroupMessages] = useState<GroupMessageData[]>([]);
   const [sharedResources, setSharedResources] = useState<any[]>([]);
   const [inviteLinks, setInviteLinks] = useState<GroupInviteLinkData[]>([]);
@@ -127,7 +127,7 @@ export const useStudyGroups = (options: { autoFetch?: boolean } = {}) => {
   );
 
   // Create group
-  const handleCreateGroup = useCallback(async (payload: CreateGroupPayload): Promise<StudyGroupData | null> => {
+  const handleCreateGroup = useCallback(async (payload: CreateGroupPayload): Promise<StudyGroup | null> => {
     setIsLoading(true);
     try {
       const data = await studyGroupService.createStudyGroup(payload.name, {
@@ -148,7 +148,7 @@ export const useStudyGroups = (options: { autoFetch?: boolean } = {}) => {
 
   // Update group
   const handleUpdateGroup = useCallback(
-    async (groupId: string, payload: UpdateGroupPayload): Promise<StudyGroupData | null> => {
+    async (groupId: string, payload: UpdateGroupPayload): Promise<StudyGroup | null> => {
       setIsLoading(true);
       try {
         const data = await studyGroupService.updateStudyGroup(groupId, payload);
@@ -189,7 +189,7 @@ export const useStudyGroups = (options: { autoFetch?: boolean } = {}) => {
 
   // Upload group avatar
   const handleUploadAvatar = useCallback(
-    async (groupId: string, file: File): Promise<StudyGroupData | null> => {
+    async (groupId: string, file: File): Promise<StudyGroup | null> => {
       setIsLoading(true);
       try {
         const data = await studyGroupService.uploadAvatar(groupId, file);
