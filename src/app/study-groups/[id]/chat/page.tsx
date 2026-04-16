@@ -23,6 +23,10 @@ import {
   ArrowRight,
   Trophy,
 } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { useGroupSocket } from '@/hooks/useGroupSocket';
 import * as studyGroupService from '@/services/studyGroupService';
 import { useAuthStore } from '@/store/authStore';
@@ -208,22 +212,51 @@ export default function StudyGroupChatPage() {
     setShowSuggestions(false);
   };
 
-  const renderContentWithMentions = (content: string) => {
+  const renderContentWithMentions = (content: string, isOwn: boolean, isAi: boolean) => {
     if (!content) return null;
-    const parts = content.split(/(@[\w\d.-]+)/g);
+    
     return (
-      <>
-        {parts.map((part, index) => {
-          if (part.startsWith('@')) {
-            return (
-              <span key={index} className="text-purple-400 font-bold">
-                {part}
-              </span>
-            );
-          }
-          return part;
-        })}
-      </>
+      <div className={`markdown-content prose prose-sm max-w-none ${isOwn ? 'prose-invert text-white' : (isAi ? 'text-purple-900' : 'text-gray-800')}`}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[rehypeKatex]}
+          components={{
+            p: ({ children }) => <p className="mb-0 last:mb-0 leading-relaxed">{children}</p>,
+            ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+            ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+            code({ node, inline, className, children, ...props }: any) {
+              const match = /language-(\w+)/.exec(className || '');
+              return !inline ? (
+                <div className="my-2 rounded-lg bg-black/10 overflow-x-auto p-3">
+                  <code className="text-xs font-mono" {...props}>
+                    {children}
+                  </code>
+                </div>
+              ) : (
+                <code className={`px-1 rounded ${isOwn ? 'bg-white/20' : 'bg-gray-100'} font-mono text-[0.9em]`} {...props}>
+                  {children}
+                </code>
+              );
+            },
+            // Custom mention highlighting within markdown if needed
+            text: ({ value }: any) => {
+              const parts = value.split(/(@[\w\d.-]+)/g);
+              return parts.map((part: string, index: number) => {
+                if (part.startsWith('@')) {
+                  return (
+                    <span key={index} className="text-purple-400 font-bold">
+                      {part}
+                    </span>
+                  );
+                }
+                return part;
+              });
+            }
+          } as any}
+        >
+          {content}
+        </ReactMarkdown>
+      </div>
     );
   };
 
@@ -364,9 +397,9 @@ export default function StudyGroupChatPage() {
                                   <span className="truncate italic">"{msg.replyTo.content}"</span>
                                 </div>
                               )}
-                              <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words">
-                                {renderContentWithMentions(msg.content)}
-                              </p>
+                              <div className="font-medium leading-relaxed whitespace-pre-wrap break-words">
+                                {renderContentWithMentions(msg.content, isOwn, isAi)}
+                              </div>
                             </div>
                           ) : msg.type === 'RESULT' ? (
                             /* RESULT SHARED CARD */
