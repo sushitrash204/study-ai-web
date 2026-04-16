@@ -55,7 +55,7 @@ export function TopNavbar() {
           <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200">
             <BookOpen className="text-white" size={20} />
           </div>
-          <span className="text-xl font-black text-gray-900 tracking-tight">AI Study Hub</span>
+          <span className="text-xl font-black text-gray-900 tracking-tight">Aivora</span>
         </Link>
 
         {/* Navigation Links - Centered */}
@@ -190,7 +190,7 @@ export function Sidebar() {
         <div className="w-10 h-10 bg-[#8B5CF6] rounded-xl flex items-center justify-center shadow-lg shadow-[#8B5CF6]/20">
           <BookOpen className="text-white" size={24} />
         </div>
-        <span className="text-xl font-extrabold text-[#1F2937] tracking-tight">AI Study Hub</span>
+        <span className="text-xl font-extrabold text-[#1F2937] tracking-tight">Aivora</span>
       </div>
 
       <nav className="flex-1 space-y-2">

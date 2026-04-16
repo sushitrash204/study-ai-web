@@ -315,3 +315,18 @@ export const unshareResult = async (
     const response = await api.delete(`/study-groups/${groupId}/shared-results/${resultId}`);
     return response.data;
 };
+/**
+ * AI Group Summary
+ */
+export const summarizeGroupChat = async (groupId: string): Promise<{ summary: string }> => {
+  const response = await api.post(`/study-groups/${groupId}/ai/summary`);
+  return response.data;
+};
+
+/**
+ * AI Group Chat Assistant
+ */
+export const chatWithGroupAI = async (groupId: string, message: string): Promise<{ answer: string }> => {
+  const response = await api.post(`/study-groups/${groupId}/ai/chat`, { message });
+  return response.data;
+};

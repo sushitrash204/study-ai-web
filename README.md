@@ -1,4 +1,4 @@
-# 🌐 AI Study Hub - Web Platform
+# 🌐 Aivora - Web Platform
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
@@ -6,7 +6,7 @@
 ![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 
-**AI Study Hub Web** là giao diện người dùng hiện đại, mạnh mẽ dành cho hệ thống hỗ trợ học tập thông minh. Được xây dựng trên nền tảng **Next.js 15+**, ứng dụng mang lại trải nghiệm mượt mà, tốc độ cao và tối ưu cho cả học tập cá nhân lẫn làm việc nhóm.
+**Aivora Web** là giao diện người dùng hiện đại, mạnh mẽ dành cho hệ thống hỗ trợ học tập thông minh. Được xây dựng trên nền tảng **Next.js 15+**, ứng dụng mang lại trải nghiệm mượt mà, tốc độ cao và tối ưu cho cả học tập cá nhân lẫn làm việc nhóm.
 
 ---
 

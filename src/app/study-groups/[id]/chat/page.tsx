@@ -44,6 +44,9 @@ export default function StudyGroupChatPage() {
   const [sending, setSending] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [groupResources, setGroupResources] = useState<any[]>([]);
+  const [groupMembers, setGroupMembers] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionList, setSuggestionList] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isInitialLoad = useRef(true);
@@ -95,6 +98,7 @@ export default function StudyGroupChatPage() {
       if (initial) {
         const groupData = await studyGroupService.getStudyGroupDetail(groupId);
         setGroupName(groupData.name);
+        setGroupMembers((groupData as any).GroupMembers || []);
         setMessages(msgs);
         setOffset(msgs.length);
         if (msgs.length < limit) setHasMore(false);
@@ -153,10 +157,17 @@ export default function StudyGroupChatPage() {
       setSending(true);
       const text = inputText.trim();
       setInputText('');
+      setShowSuggestions(false);
 
-      // Send via Socket.io ONLY
-      // The backend socket handler will save this to the DB and broadcast it
+      // Send the user's message to the group first
       socketSendMessage(text, 'TEXT');
+
+      // Then trigger AI if tagged
+      if (text.toLowerCase().startsWith('@ai')) {
+        await studyGroupService.chatWithGroupAI(groupId, text.slice(3).trim());
+      } else if (text.toLowerCase().startsWith('@summary')) {
+        await studyGroupService.summarizeGroupChat(groupId);
+      }
       
       scrollToBottom();
     } catch (error) {
@@ -164,6 +175,40 @@ export default function StudyGroupChatPage() {
     } finally {
       setSending(false);
     }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    setInputText(text);
+    
+    const lastWord = text.split(/\s/).pop() || '';
+    if (lastWord.startsWith('@')) {
+      const query = lastWord.slice(1).toLowerCase();
+      const members = groupMembers.map(m => ({ id: m.userId, name: `${m.user?.firstName} ${m.user?.lastName}`, type: 'MEMBER' }));
+      const all = [
+        { id: 'ai', name: 'ai (Trợ lý học tập)', type: 'AI' },
+        { id: 'summary', name: 'summary (Tóm tắt thảo luận)', type: 'AI' },
+        ...members
+      ];
+      const filtered = all.filter(item => item.name.toLowerCase().includes(query));
+      
+      if (filtered.length > 0) {
+        setSuggestionList(filtered);
+        setShowSuggestions(true);
+      } else {
+        setShowSuggestions(false);
+      }
+    } else {
+      setShowSuggestions(false);
+    }
+  };
+
+  const applySuggestion = (item: any) => {
+    const words = inputText.split(/\s/);
+    words.pop();
+    const newText = [...words, `@${item.name.split(' (')[0]} `].join(' ').trimStart();
+    setInputText(newText);
+    setShowSuggestions(false);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -209,13 +254,15 @@ export default function StudyGroupChatPage() {
             </div>
           </div>
           
-          <button
-            onClick={() => router.push(`/study-groups/${groupId}`)}
-            className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-xl font-black text-[8px] uppercase tracking-widest hover:bg-gray-100 transition-all border border-gray-100"
-          >
-            <Info size={14} />
-            Thông tin
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => router.push(`/study-groups/${groupId}`)}
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-50 text-gray-500 rounded-xl font-black text-[8px] uppercase tracking-widest hover:bg-gray-100 transition-all border border-gray-100"
+            >
+              <Info size={14} />
+              Thông tin
+            </button>
+          </div>
         </div>
       </div>
 
@@ -264,18 +311,22 @@ export default function StudyGroupChatPage() {
             <div className="space-y-3">
               {messages.map((msg, idx) => {
                 const isOwn = msg.userId === user.id;
+                const isAi = msg.userId === 'AI_ASSISTANT';
                 const showAvatar = idx === 0 || messages[idx-1].userId !== msg.userId;
                 
                 return (
                    <div key={msg._id || msg.id || idx} className={`flex items-end gap-2 ${isOwn ? 'flex-row-reverse' : 'flex-row'} ${!showAvatar ? 'mt-1' : 'mt-4'}`}>
-                     <div className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[9px] font-black ${isOwn ? 'bg-indigo-600 text-white' : 'bg-white text-indigo-600 border border-indigo-50 shadow-sm'} ${!showAvatar && 'opacity-0'}`}>
-                        {msg.user?.firstName?.[0] || 'U'}
+                     <div className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-[9px] font-black ${
+                       isOwn ? 'bg-indigo-600 text-white' : 
+                       (isAi ? 'bg-purple-600 text-white' : 'bg-white text-indigo-600 border border-indigo-50 shadow-sm')
+                     } ${!showAvatar && 'opacity-0'}`}>
+                        {isAi ? <Sparkles size={12} /> : (msg.user?.firstName?.[0] || 'U')}
                      </div>
                      
                      <div className={`flex flex-col max-w-[85%] sm:max-w-md ${isOwn ? 'items-end' : 'items-start'}`}>
                         {showAvatar && !isOwn && (
-                           <span className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-0.5 ml-1">
-                              {msg.user?.firstName} {msg.user?.lastName}
+                           <span className={`text-[8px] font-black uppercase tracking-widest mb-0.5 ml-1 ${isAi ? 'text-purple-500' : 'text-gray-400'}`}>
+                              {isAi ? 'Hệ thống AI' : `${msg.user?.firstName} ${msg.user?.lastName}`}
                            </span>
                         )}
                         
@@ -284,7 +335,10 @@ export default function StudyGroupChatPage() {
                             <div className={`px-4 py-2.5 rounded-[20px] shadow-sm relative group transition-all ${
                               isOwn
                                 ? 'bg-indigo-600 text-white rounded-br-none'
-                                : 'bg-white text-gray-800 rounded-bl-none border border-white'
+                                : (isAi 
+                                    ? 'bg-purple-50 text-purple-900 border border-purple-100 rounded-bl-none'
+                                    : 'bg-white text-gray-800 rounded-bl-none border border-white'
+                                  )
                             }`}>
                               <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words">{msg.content}</p>
                             </div>
@@ -432,8 +486,30 @@ export default function StudyGroupChatPage() {
       </div>
 
       {/* Compact Input Bar */}
-      <div className="bg-white/80 backdrop-blur-xl border-t border-white p-3 pb-6">
-        <div className="max-w-4xl mx-auto">
+      <div className="bg-white/80 backdrop-blur-xl border-t border-white p-3 pb-6 relative">
+        <div className="max-w-4xl mx-auto relative">
+          
+          {/* Suggestions List */}
+          {showSuggestions && (
+            <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-2xl border border-gray-100 shadow-2xl overflow-hidden z-20 max-h-64 overflow-y-auto">
+              {suggestionList.map((item, idx) => (
+                <button
+                  key={item.id}
+                  onClick={() => applySuggestion(item)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left ${idx !== suggestionList.length - 1 ? 'border-b border-gray-50' : ''}`}
+                >
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${item.type === 'AI' ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}`}>
+                    {item.type === 'AI' ? <Sparkles size={16} /> : <User size={16} />}
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-gray-900">{item.name}</p>
+                    {item.type === 'AI' && <p className="text-[10px] font-bold text-gray-400 font-mono">@ai</p>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="relative flex items-end gap-2 bg-gray-50 rounded-[24px] p-1.5 border border-gray-100 shadow-inner group focus-within:bg-white focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
             <button 
               onClick={() => setShowShareModal(true)}
@@ -443,11 +519,11 @@ export default function StudyGroupChatPage() {
             </button>
             <textarea
               value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyPress}
-              placeholder="Nhập tin nhắn..."
+              placeholder="Hỏi trợ lý @ai hoặc nhắn tin cho nhóm..."
               disabled={!status.connected || sending}
-              className="flex-1 px-2 py-3 bg-transparent border-none focus:ring-0 text-sm font-bold text-gray-800 placeholder:text-gray-400 placeholder:font-black placeholder:uppercase placeholder:text-[9px] placeholder:tracking-widest resize-none max-h-32 min-h-[44px]"
+              className="flex-1 px-2 py-3 bg-transparent border-none focus:ring-0 focus:outline-none text-sm font-bold text-gray-800 placeholder:text-gray-400 placeholder:font-black placeholder:uppercase placeholder:text-[9px] placeholder:tracking-widest resize-none max-h-32 min-h-[44px]"
               rows={1}
             />
             <button className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-indigo-600 transition-colors">
