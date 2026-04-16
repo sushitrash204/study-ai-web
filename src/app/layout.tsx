@@ -11,8 +11,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "AI Study App",
-  description: "Trợ lý học tập thông minh",
+  title: "Aivora - Trợ lý học tập thông minh",
+  description: "Nền tảng học tập thông minh tích hợp trí tuệ nhân tạo dành cho sinh viên Việt Nam",
 };
 
 import { AuthInitializer } from "@/components/AuthInitializer"

@@ -94,7 +94,7 @@ export function TopNavbar() {
             >
               <Settings size={16} className="group-hover:rotate-90 transition-transform duration-300" />
               <span className="hidden xl:inline">Admin Panel</span>
-              <span className="px-2 py-0.5 bg-white/20 rounded-lg text-[10px] font-black uppercase tracking-wider">PRO</span>
+
             </button>
           )}
 
