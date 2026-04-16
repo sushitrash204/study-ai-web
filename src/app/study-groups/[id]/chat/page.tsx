@@ -47,6 +47,7 @@ export default function StudyGroupChatPage() {
   const [groupMembers, setGroupMembers] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestionList, setSuggestionList] = useState<any[]>([]);
+  const [replyingTo, setReplyingTo] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isInitialLoad = useRef(true);
@@ -156,18 +157,14 @@ export default function StudyGroupChatPage() {
     try {
       setSending(true);
       const text = inputText.trim();
+      const replyId = replyingTo?._id;
+      
       setInputText('');
+      setReplyingTo(null);
       setShowSuggestions(false);
 
       // Send the user's message to the group first
-      socketSendMessage(text, 'TEXT');
-
-      // Then trigger AI if tagged
-      if (text.toLowerCase().startsWith('@ai')) {
-        await studyGroupService.chatWithGroupAI(groupId, text.slice(3).trim());
-      } else if (text.toLowerCase().startsWith('@summary')) {
-        await studyGroupService.summarizeGroupChat(groupId);
-      }
+      socketSendMessage(text, 'TEXT', undefined, replyId);
       
       scrollToBottom();
     } catch (error) {
@@ -209,6 +206,25 @@ export default function StudyGroupChatPage() {
     const newText = [...words, `@${item.name.split(' (')[0]} `].join(' ').trimStart();
     setInputText(newText);
     setShowSuggestions(false);
+  };
+
+  const renderContentWithMentions = (content: string) => {
+    if (!content) return null;
+    const parts = content.split(/(@[\w\d.-]+)/g);
+    return (
+      <>
+        {parts.map((part, index) => {
+          if (part.startsWith('@')) {
+            return (
+              <span key={index} className="text-purple-400 font-bold">
+                {part}
+              </span>
+            );
+          }
+          return part;
+        })}
+      </>
+    );
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -330,9 +346,9 @@ export default function StudyGroupChatPage() {
                            </span>
                         )}
                         
-                        <div className={`flex items-center gap-3 ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+                        <div className={`flex items-center gap-3 group/msg ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
                           {msg.type === 'TEXT' ? (
-                            <div className={`px-4 py-2.5 rounded-[20px] shadow-sm relative group transition-all ${
+                            <div className={`px-4 py-2.5 rounded-[20px] shadow-sm relative transition-all ${
                               isOwn
                                 ? 'bg-indigo-600 text-white rounded-br-none'
                                 : (isAi 
@@ -340,11 +356,21 @@ export default function StudyGroupChatPage() {
                                     : 'bg-white text-gray-800 rounded-bl-none border border-white'
                                   )
                             }`}>
-                              <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words">{msg.content}</p>
+                              {msg.replyTo && (
+                                <div className={`mb-2 p-2 rounded-lg text-[10px] border-l-2 bg-black/5 flex flex-col gap-0.5 max-w-[200px] ${isOwn ? 'border-white/50 text-white/80' : 'border-indigo-400 text-gray-500'}`}>
+                                  <span className="font-black uppercase tracking-widest text-[8px]">
+                                    Phản hồi từ {msg.replyTo.userId === user.id ? 'Bạn' : (msg.replyTo.user?.firstName || 'AI')}
+                                  </span>
+                                  <span className="truncate italic">"{msg.replyTo.content}"</span>
+                                </div>
+                              )}
+                              <p className="text-sm font-medium leading-relaxed whitespace-pre-wrap break-words">
+                                {renderContentWithMentions(msg.content)}
+                              </p>
                             </div>
                           ) : msg.type === 'RESULT' ? (
                             /* RESULT SHARED CARD */
-                            <div className="bg-white rounded-[24px] border border-emerald-100 shadow-xl shadow-emerald-100/20 overflow-hidden min-w-[280px] max-w-[340px] group transition-all duration-300 hover:-translate-y-1">
+                            <div className="bg-white rounded-[24px] border border-emerald-100 shadow-xl shadow-emerald-100/20 overflow-hidden min-w-[280px] max-w-[340px] transition-all duration-300 hover:-translate-y-1">
                               {/* Header */}
                               <div className="p-5 flex items-start gap-4 bg-gradient-to-r from-emerald-50 to-teal-50">
                                 <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-emerald-100">
@@ -393,7 +419,7 @@ export default function StudyGroupChatPage() {
                             </div>
                           ) : (
                             /* PROFESSIONAL DATA-RICH CARD */
-                            <div className="bg-white rounded-[24px] border border-gray-100 shadow-xl shadow-indigo-100/20 overflow-hidden min-w-[300px] max-w-[380px] group transition-all duration-300 hover:-translate-y-1">
+                            <div className="bg-white rounded-[24px] border border-gray-100 shadow-xl shadow-indigo-100/20 overflow-hidden min-w-[300px] max-w-[380px] transition-all duration-300 hover:-translate-y-1">
                               {/* Top Section: Identity */}
                               <div className="p-5 flex items-start gap-4 bg-gray-50/80">
                                 <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-indigo-100">
@@ -471,7 +497,16 @@ export default function StudyGroupChatPage() {
                             </div>
                           )}
 
-                          <span className="text-[9px] font-black text-gray-300 uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                          {/* Hover Reply Button */}
+                          <button 
+                            onClick={() => setReplyingTo(msg)}
+                            className={`p-1.5 rounded-full bg-white shadow-sm border border-gray-100 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all opacity-0 group-hover/msg:opacity-100 ${isOwn ? 'mr-1' : 'ml-1'}`}
+                            title="Phản hồi"
+                          >
+                            <Send size={12} className="rotate-[-45deg]" />
+                          </button>
+
+                          <span className="text-[9px] font-black text-gray-300 uppercase tracking-tighter opacity-0 group-hover/msg:opacity-100 transition-all transform translate-x-2 group-hover/msg:translate-x-0">
                              {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
@@ -488,6 +523,27 @@ export default function StudyGroupChatPage() {
       {/* Compact Input Bar */}
       <div className="bg-white/80 backdrop-blur-xl border-t border-white p-3 pb-6 relative">
         <div className="max-w-4xl mx-auto relative">
+          
+          {/* Reply Preview */}
+          {replyingTo && (
+            <div className="mb-2 p-3 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-1 bg-indigo-400 h-8 rounded-full" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
+                    Đang phản hồi {replyingTo.userId === user.id ? 'chính mình' : (replyingTo.user?.firstName || 'AI')}
+                  </p>
+                  <p className="text-xs text-gray-500 truncate italic">"{replyingTo.content}"</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setReplyingTo(null)}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all transform active:scale-95"
+              >
+                <Hash size={16} className="rotate-45" /> 
+              </button>
+            </div>
+          )}
           
           {/* Suggestions List */}
           {showSuggestions && (

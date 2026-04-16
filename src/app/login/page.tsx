@@ -48,8 +48,8 @@ export default function LoginPage() {
       <div className="relative w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-500" suppressHydrationWarning>
         <div className="bg-white border border-[#E5E7EB] rounded-[32px] p-8 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.05)]" suppressHydrationWarning>
           <header className="text-center mb-10">
-            <div className="w-16 h-16 bg-[#F5F3FF] rounded-[20px] shadow-sm flex items-center justify-center mx-auto mb-6 border border-[#8B5CF6]/20">
-               <Lock className="text-[#8B5CF6]" size={32} strokeWidth={1.5} />
+            <div className="w-20 h-20 bg-white rounded-[24px] shadow-lg flex items-center justify-center mx-auto mb-6 border border-gray-100 overflow-hidden p-1">
+               <img src="/logo.png" alt="Aivora Logo" className="w-full h-full object-contain" />
             </div>
             <h1 className="text-3xl font-extrabold text-[#1F2937] mb-2 tracking-tight">Đăng nhập</h1>
             <p className="text-[#6B7280] font-medium">Tiếp tục hành trình học tập cùng AI</p>

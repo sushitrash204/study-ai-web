@@ -13,6 +13,9 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "Aivora - Trợ lý học tập thông minh",
   description: "Nền tảng học tập thông minh tích hợp trí tuệ nhân tạo dành cho sinh viên Việt Nam",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 import { AuthInitializer } from "@/components/AuthInitializer"

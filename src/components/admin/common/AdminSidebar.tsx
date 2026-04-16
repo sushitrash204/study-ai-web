@@ -38,12 +38,12 @@ export function AdminSidebar() {
     <aside className="hidden md:flex w-72 bg-white flex-col p-6 sticky top-0 h-screen border-r border-gray-100 z-20 shadow-sm">
       {/* Brand / Logo */}
       <div className="flex items-center space-x-3 mb-10 px-2">
-        <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-violet-200">
-          <Settings className="text-white" size={22} strokeWidth={2.5} />
+        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden border border-gray-100">
+          <img src="/logo.png" alt="Aivora Logo" className="w-full h-full object-cover" />
         </div>
         <div className="flex flex-col">
-          <span className="text-lg font-black text-gray-900 tracking-tight leading-none">ADMIN HUB</span>
-          <span className="text-[10px] font-bold text-violet-600 uppercase tracking-[0.2em] mt-1">Management</span>
+          <span className="text-lg font-black text-gray-900 tracking-tight leading-none uppercase">Aivora Admin</span>
+          <span className="text-[10px] font-bold text-[#8B5CF6] uppercase tracking-[0.2em] mt-1">Management</span>
         </div>
       </div>
 
@@ -56,14 +56,14 @@ export function AdminSidebar() {
               key={i}
               href={item.href}
               className={`flex items-center space-x-3 px-4 py-3.5 rounded-2xl transition-all font-bold group relative overflow-hidden ${active
-                  ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg shadow-violet-200 active:scale-95'
+                  ? 'bg-[#8B5CF6] text-white shadow-lg shadow-[#8B5CF6]/20 active:scale-95'
                   : 'hover:bg-gray-50 text-gray-600 hover:text-gray-900'
                 }`}
             >
               <item.icon
                 size={20}
                 strokeWidth={active ? 2.5 : 2}
-                className={`${active ? 'text-white' : 'text-gray-400 group-hover:text-violet-600'} transition-colors`}
+                className={`${active ? 'text-white' : 'text-gray-400 group-hover:text-[#8B5CF6]'} transition-colors`}
               />
               <span className="relative z-10">{item.label}</span>
               {active && <div className="absolute right-0 top-0 bottom-0 w-1.5 bg-white/30 rounded-l-full"></div>}

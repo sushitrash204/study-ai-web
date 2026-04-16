@@ -52,8 +52,8 @@ export function TopNavbar() {
       <div className="max-w-[1400px] mx-auto px-8 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3 group shrink-0">
-          <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200">
-            <BookOpen className="text-white" size={20} />
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-100">
+            <img src="/logo.png" alt="Aivora Logo" className="w-full h-full object-cover" />
           </div>
           <span className="text-xl font-black text-gray-900 tracking-tight">Aivora</span>
         </Link>
@@ -72,12 +72,12 @@ export function TopNavbar() {
               <Link
                 key={i}
                 href={item.href}
-                className={`relative py-2 text-[13px] font-black transition-all whitespace-nowrap ${active ? 'text-indigo-600' : 'text-gray-400 hover:text-gray-900'
+                className={`relative py-2 text-[13px] font-black transition-all whitespace-nowrap ${active ? 'text-[#8B5CF6]' : 'text-gray-400 hover:text-gray-900'
                   }`}
               >
                 {item.label}
                 {active && (
-                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-indigo-600 rounded-full animate-in fade-in slide-in-from-bottom-1 duration-300"></span>
+                  <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[#8B5CF6] rounded-full animate-in fade-in slide-in-from-bottom-1 duration-300"></span>
                 )}
               </Link>
             );
@@ -187,8 +187,8 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex w-72 bg-white border-r border-[#E5E7EB] flex-col p-6 sticky top-0 h-screen shadow-sm z-20">
       <div className="flex items-center space-x-3 mb-12 px-2">
-        <div className="w-10 h-10 bg-[#8B5CF6] rounded-xl flex items-center justify-center shadow-lg shadow-[#8B5CF6]/20">
-          <BookOpen className="text-white" size={24} />
+        <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden border border-gray-100">
+          <img src="/logo.png" alt="Aivora Logo" className="w-full h-full object-cover" />
         </div>
         <span className="text-xl font-extrabold text-[#1F2937] tracking-tight">Aivora</span>
       </div>

@@ -143,7 +143,8 @@ export const useGroupSocket = (options: UseGroupSocketOptions) => {
     (
       content: string,
       type: 'TEXT' | 'DOCUMENT' | 'EXERCISE' | 'RESULT' = 'TEXT',
-      resourceId?: string
+      resourceId?: string,
+      replyToMessageId?: string
     ) => {
       if (!socketRef.current?.connected) {
         console.warn('Socket not connected');
@@ -156,6 +157,7 @@ export const useGroupSocket = (options: UseGroupSocketOptions) => {
         content,
         type,
         resourceId,
+        replyToMessageId,
       });
     },
     [groupId, userId]

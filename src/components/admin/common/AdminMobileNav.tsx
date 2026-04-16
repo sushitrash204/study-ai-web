@@ -36,14 +36,14 @@ export function AdminMobileNav() {
           <Link
             key={i}
             href={item.href}
-            className={`flex flex-col items-center justify-center transition-all w-12 h-12 rounded-2xl ${active ? 'bg-violet-50' : 'active:scale-90'}`}
+            className={`flex flex-col items-center justify-center transition-all w-12 h-12 rounded-2xl ${active ? 'bg-[#F5F3FF]' : 'active:scale-90'}`}
           >
             <item.icon
               size={22}
               strokeWidth={active ? 2.5 : 2}
-              className={active ? 'text-violet-600' : 'text-gray-400'}
+              className={active ? 'text-[#8B5CF6]' : 'text-gray-400'}
             />
-            <span className={`text-[9px] font-extrabold mt-1 uppercase tracking-tighter ${active ? 'text-violet-600' : 'text-gray-400'}`}>
+            <span className={`text-[9px] font-extrabold mt-1 uppercase tracking-tighter ${active ? 'text-[#8B5CF6]' : 'text-gray-400'}`}>
               {item.label}
             </span>
           </Link>
