@@ -221,9 +221,9 @@ export default function StudyGroupChatPage() {
           remarkPlugins={[remarkGfm, remarkMath]}
           rehypePlugins={[rehypeKatex]}
           components={{
-            p: ({ children }) => <p className="mb-0 last:mb-0 leading-relaxed">{children}</p>,
-            ul: ({ children }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
-            ol: ({ children }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
+            p: ({ children }: { children: React.ReactNode }) => <p className="mb-0 last:mb-0 leading-relaxed">{children}</p>,
+            ul: ({ children }: { children: React.ReactNode }) => <ul className="list-disc pl-4 mb-2">{children}</ul>,
+            ol: ({ children }: { children: React.ReactNode }) => <ol className="list-decimal pl-4 mb-2">{children}</ol>,
             code({ node, inline, className, children, ...props }: any) {
               const match = /language-(\w+)/.exec(className || '');
               return !inline ? (
