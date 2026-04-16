@@ -28,7 +28,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender }) => {
             )}
         >
             <div className={cn(
-                "flex max-w-[85%] md:max-w-3xl",
+                "flex max-w-[85%] md:max-w-[90%]",
                 isUser ? "flex-row-reverse" : "flex-row"
             )}>
                 {/* Avatar */}

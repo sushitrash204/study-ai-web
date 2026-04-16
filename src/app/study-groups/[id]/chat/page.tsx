@@ -291,7 +291,7 @@ export default function StudyGroupChatPage() {
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto px-4 py-4"
       >
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className="max-w-6xl mx-auto space-y-4">
           {hasMore && messages.length >= 10 && (
              <div className="flex justify-center py-2">
                 {loadingMore ? (
@@ -334,7 +334,7 @@ export default function StudyGroupChatPage() {
                         {isAi ? <Sparkles size={12} /> : (msg.user?.firstName?.[0] || 'U')}
                      </div>
                      
-                     <div className={`flex flex-col max-w-[85%] sm:max-w-md ${isOwn ? 'items-end' : 'items-start'}`}>
+                     <div className={`flex flex-col max-w-[85%] sm:max-w-4xl ${isOwn ? 'items-end' : 'items-start'}`}>
                         {showAvatar && !isOwn && (
                            <span className={`text-[8px] font-black uppercase tracking-widest mb-0.5 ml-1 ${isAi ? 'text-purple-500' : 'text-gray-400'}`}>
                               {isAi ? 'Hệ thống AI' : `${msg.user?.firstName} ${msg.user?.lastName}`}
@@ -517,7 +517,7 @@ export default function StudyGroupChatPage() {
 
       {/* Compact Input Bar */}
       <div className="bg-white/80 backdrop-blur-xl border-t border-white p-3 pb-6 relative">
-        <div className="max-w-4xl mx-auto relative">
+        <div className="max-w-6xl mx-auto relative">
           
           {/* Reply Preview */}
           {replyingTo && (

@@ -254,7 +254,7 @@ function ChatContent() {
         <div className="p-4 md:p-6 bg-white border-t border-[#E5E7EB] md:bg-transparent md:border-t-0 md:bg-gradient-to-t md:from-[#F9FAFB] md:via-[#F9FAFB] md:to-transparent">
           <form 
             onSubmit={handleSendMessage}
-            className="max-w-4xl mx-auto relative flex items-end bg-[#F2F2F7] md:bg-white md:border md:border-[#E5E7EB] rounded-3xl p-1 md:p-2 focus-within:ring-2 focus-within:ring-[#8B5CF6]/30 transition-all md:shadow-xl md:shadow-black/5"
+            className="max-w-6xl mx-auto relative flex items-end bg-[#F2F2F7] md:bg-white md:border md:border-[#E5E7EB] rounded-3xl p-1 md:p-2 focus-within:ring-2 focus-within:ring-[#8B5CF6]/30 transition-all md:shadow-xl md:shadow-black/5"
           >
             <button 
               type="button" 
