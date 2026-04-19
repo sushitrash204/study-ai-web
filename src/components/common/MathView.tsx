@@ -37,7 +37,7 @@ export default function MathView({ content, isUser = false, inline = false, clas
     return (
         <div className={cn(
             "prose prose-sm max-w-none break-words",
-            isUser ? "prose-invert text-white" : "text-[#1F2937]",
+            isUser ? "prose-invert text-white !text-white" : "text-[#1F2937]",
             inline ? "inline-block" : "block",
             className
         )}>
@@ -104,7 +104,7 @@ export default function MathView({ content, isUser = false, inline = false, clas
                         return parts.map((part: string, index: number) => {
                             if (part.startsWith('@')) {
                                 return (
-                                    <span key={index} className={cn("font-black", isUser ? "text-white" : "text-[#8B5CF6]")}>
+                                    <span key={index} className={cn("font-black", isUser ? "text-white !text-white" : "text-[#8B5CF6]")}>
                                         {part}
                                     </span>
                                 );

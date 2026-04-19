@@ -58,14 +58,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender }) => {
                     <div className={cn(
                         "relative p-4 md:p-5 rounded-[24px] text-sm md:text-[15px] leading-relaxed shadow-sm transition-all duration-300",
                         isUser
-                            ? "bg-[#8B5CF6] text-white rounded-tr-sm group-hover:shadow-[#8B5CF6]/20 group-hover:shadow-lg"
+                            ? "bg-[#8B5CF6] text-white !text-white rounded-tr-sm group-hover:shadow-[#8B5CF6]/20 group-hover:shadow-lg"
                             : "bg-white text-[#1F2937] border border-[#E5E7EB] rounded-tl-sm group-hover:shadow-lg group-hover:shadow-black/5"
                     )}>
                         <MathView 
                             content={text} 
                             isUser={isUser}
                             className={cn(
-                                isUser ? "text-white" : "text-[#374151]"
+                                isUser ? "text-white !text-white" : "text-[#374151]"
                             )} 
                         />
                     </div>

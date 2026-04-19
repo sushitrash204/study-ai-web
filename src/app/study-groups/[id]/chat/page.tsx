@@ -217,7 +217,7 @@ export default function StudyGroupChatPage() {
       <MathView 
         content={content} 
         isUser={isOwn} 
-        className={isAi ? 'text-purple-900' : 'text-gray-800'}
+        className={isAi ? 'text-purple-900' : (isOwn ? 'text-white' : 'text-gray-800')}
       />
     );
   };
