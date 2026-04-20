@@ -39,10 +39,10 @@ export function AdminSidebar() {
       {/* Brand / Logo */}
       <div className="flex items-center space-x-3 mb-10 px-2">
         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden border border-gray-100">
-          <img src="/logo.png" alt="Aivora Logo" className="w-full h-full object-cover" />
+          <img src="/logo.png" alt="Yukon Logo" className="w-full h-full object-cover" />
         </div>
         <div className="flex flex-col">
-          <span className="text-lg font-black text-gray-900 tracking-tight leading-none uppercase">Aivora Admin</span>
+          <span className="text-lg font-black text-gray-900 tracking-tight leading-none uppercase">Yukon Admin</span>
           <span className="text-[10px] font-bold text-[#8B5CF6] uppercase tracking-[0.2em] mt-1">Management</span>
         </div>
       </div>

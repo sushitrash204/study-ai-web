@@ -53,9 +53,9 @@ export function TopNavbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center space-x-3 group shrink-0">
           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-md overflow-hidden border border-gray-100">
-            <img src="/logo.png" alt="Aivora Logo" className="w-full h-full object-cover" />
+            <img src="/logo.png" alt="Yukon Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="text-xl font-black text-gray-900 tracking-tight">Aivora</span>
+          <span className="text-xl font-black text-gray-900 tracking-tight">Yukon</span>
         </Link>
 
         {/* Navigation Links - Centered */}
@@ -188,9 +188,9 @@ export function Sidebar() {
     <aside className="hidden md:flex w-72 bg-white border-r border-[#E5E7EB] flex-col p-6 sticky top-0 h-screen shadow-sm z-20">
       <div className="flex items-center space-x-3 mb-12 px-2">
         <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-lg overflow-hidden border border-gray-100">
-          <img src="/logo.png" alt="Aivora Logo" className="w-full h-full object-cover" />
+          <img src="/logo.png" alt="Yukon Logo" className="w-full h-full object-cover" />
         </div>
-        <span className="text-xl font-extrabold text-[#1F2937] tracking-tight">Aivora</span>
+        <span className="text-xl font-extrabold text-[#1F2937] tracking-tight">Yukon</span>
       </div>
 
       <nav className="flex-1 space-y-2">
