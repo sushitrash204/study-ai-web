@@ -10,17 +10,14 @@ import { StudyGroup } from '@/services/studyGroupService';
 import {
    BookOpen,
    FileText,
-   Sparkles,
    User,
    Users,
-   Zap,
-   Calendar,
    Award,
    ArrowRight
 } from 'lucide-react';
 
 export default function Dashboard() {
-   const { user, isAuthenticated, isInitializing } = useAuthStore();
+   const { isAuthenticated, isInitializing } = useAuthStore();
    const router = useRouter();
    const { stats, isLoading: isStatsLoading } = useStats();
    
@@ -58,11 +55,6 @@ export default function Dashboard() {
       );
    }
 
-   const schedule = [
-      { id: 1, title: "Machine Learning Workshop", time: "09:00 - 11:30 AM", date: "14", month: "TH 10" },
-      { id: 2, title: "Kiểm tra Giữa kỳ UX Design", time: "02:00 - 04:00 PM", date: "16", month: "TH 10" }
-   ];
-
    return (
       <div className="min-h-screen bg-[#F3F5F9] pb-12 pt-16">
          <div className="max-w-[1400px] mx-auto px-4 md:px-8">
@@ -84,7 +76,7 @@ export default function Dashboard() {
                         Khám phá kho <br/> tàng kiến thức
                      </h2>
                      <p className="text-gray-500 font-bold text-lg max-w-md leading-relaxed">
-                        Nâng tầm hành trình học tập của bạn với AI Mentor cá nhân hóa và lộ trình học tập tối ưu nhất.
+                        Nâng tầm hành trình học tập của bạn với các công cụ học tập hiện đại và lộ trình tối ưu nhất.
                      </p>
                      <button 
                         onClick={() => router.push('/subjects')}
@@ -129,11 +121,11 @@ export default function Dashboard() {
                ))}
             </section>
 
-            {/* 3. Main Split View */}
+            {/* 3. Main Content */}
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
                
-               {/* Left Column: Recommendations */}
-               <div className="xl:col-span-8 space-y-6">
+               {/* Recommendations */}
+               <div className="xl:col-span-12 space-y-6">
                   <div className="flex items-center justify-between mb-4 px-2">
                      <div className="flex items-center gap-3">
                         <div className="p-2 bg-indigo-100 rounded-xl">
@@ -208,65 +200,6 @@ export default function Dashboard() {
                         </div>
                      )}
                   </div>
-               </div>
-
-               {/* Right Column: Sidebar */}
-               <div className="xl:col-span-4 space-y-6">
-                  
-                  {/* AI Mentor Widget */}
-                  <div className="bg-[#6366F1] rounded-[40px] p-8 text-white relative overflow-hidden shadow-xl shadow-indigo-500/20 group">
-                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
-                     <div className="relative z-10 space-y-6">
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center border border-white/20">
-                           <Sparkles size={24} className="text-white fill-white" />
-                        </div>
-                        <div className="space-y-2">
-                           <h3 className="text-2xl font-black tracking-tight">AI Mentor</h3>
-                           <p className="text-white/80 font-medium text-sm leading-relaxed">
-                              Chào bạn! Tôi đã chuẩn bị xong kế hoạch học tập hôm nay cho bạn. Bạn muốn bắt đầu với môn nào?
-                           </p>
-                        </div>
-                        <div className="space-y-2">
-                           <button className="w-full flex items-center gap-3 px-5 py-3.5 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 group/item">
-                              <Zap size={18} className="text-amber-400 fill-amber-400" />
-                              <span className="text-xs font-black uppercase tracking-widest">Bắt đầu ôn tập nhanh</span>
-                           </button>
-                           <button className="w-full flex items-center gap-3 px-5 py-3.5 bg-white/10 hover:bg-white/20 rounded-2xl transition-all border border-white/10 group/item">
-                              <FileText size={18} className="text-white" />
-                              <span className="text-xs font-black uppercase tracking-widest">Tóm tắt bài giảng mới</span>
-                           </button>
-                        </div>
-                        <button className="w-full py-4 bg-white text-[#6366F1] rounded-2xl font-black text-sm shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                           Trò chuyện với Mentor
-                        </button>
-                     </div>
-                  </div>
-
-                  {/* Upcoming Schedule */}
-                  <div className="bg-white rounded-[40px] p-8 border border-white shadow-sm space-y-6">
-                     <h3 className="text-xl font-black text-gray-900 tracking-tight">Lịch học sắp tới</h3>
-                     <div className="space-y-4">
-                        {schedule.map((item) => (
-                           <div key={item.id} className="flex items-center gap-4 group cursor-pointer hover:bg-gray-50 p-2 rounded-2xl transition-all">
-                              <div className="w-14 h-14 bg-gray-50 rounded-2xl flex flex-col items-center justify-center border border-gray-100 shrink-0 group-hover:bg-white group-hover:border-purple-200 transition-colors">
-                                 <span className="text-lg font-black text-gray-900 leading-none">{item.date}</span>
-                                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-tighter">{item.month}</span>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                 <h4 className="text-sm font-black text-gray-900 truncate tracking-tight">{item.title}</h4>
-                                 <div className="flex items-center gap-2 text-gray-400 mt-0.5">
-                                    <Calendar size={12} />
-                                    <span className="text-[11px] font-bold">{item.time}</span>
-                                 </div>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                     <button className="w-full py-3 border-2 border-gray-50 rounded-2xl text-[11px] font-black text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-all uppercase tracking-widest">
-                        Xem lịch chi tiết
-                     </button>
-                  </div>
-
                </div>
             </div>
          </div>
