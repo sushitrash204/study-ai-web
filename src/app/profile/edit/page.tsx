@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/auth/useAuth';
 import { ArrowLeft, User, Loader2, Save } from 'lucide-react';
@@ -13,15 +13,13 @@ export default function EditProfilePage() {
     const router = useRouter();
     const { state: { user, isLoading }, actions } = useAuth();
     
-    const [firstName, setFirstName] = useState(user?.firstName || '');
-    const [lastName, setLastName] = useState(user?.lastName || '');
+    const initialValues = useMemo(() => ({
+        firstName: user?.firstName || '',
+        lastName: user?.lastName || '',
+    }), [user?.firstName, user?.lastName]);
 
-    useEffect(() => {
-        if (user) {
-            setFirstName(user.firstName || '');
-            setLastName(user.lastName || '');
-        }
-    }, [user]);
+    const [firstName, setFirstName] = useState(initialValues.firstName);
+    const [lastName, setLastName] = useState(initialValues.lastName);
 
     const onSave = async (e: React.FormEvent) => {
         e.preventDefault();

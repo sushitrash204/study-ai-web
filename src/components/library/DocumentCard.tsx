@@ -99,7 +99,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
                         {item.fileType?.toUpperCase() || 'PDF'}
                     </span>
                     <span className="text-gray-400 font-bold text-[11px]">
-                        {new Date(item.createdAt || Date.now()).toLocaleDateString('vi-VN')}
+                        {item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '—'}
                     </span>
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                 </div>

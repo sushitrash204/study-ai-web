@@ -108,7 +108,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ script, lang = 'en', showScri
             {showScript && (
                 <div className="mt-2 p-3 bg-white border border-dashed border-[#CBD5E1] rounded-xl animate-in slide-in-from-top-1 duration-200">
                     <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-widest mb-1">Transcript:</p>
-                    <p className="text-[13px] text-[#475569] leading-relaxed italic font-serif">"{script}"</p>
+                    <p className="text-[13px] text-[#475569] leading-relaxed italic font-serif">&ldquo;{script}&rdquo;</p>
                 </div>
             )}
 

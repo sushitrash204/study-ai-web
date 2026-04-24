@@ -356,7 +356,7 @@ export default function StudyGroupChatPage() {
                                   <span className="font-black uppercase tracking-widest text-[8px]">
                                     Phản hồi từ {msg.replyTo.userId === user.id ? 'Bạn' : (msg.replyTo.user?.firstName || 'AI')}
                                   </span>
-                                  <span className="truncate italic">"{msg.replyTo.content}"</span>
+                                  <span className="truncate italic">&ldquo;{msg.replyTo.content}&rdquo;</span>
                                 </div>
                               )}
                               <div className="font-medium leading-relaxed whitespace-pre-wrap break-words">
@@ -528,7 +528,7 @@ export default function StudyGroupChatPage() {
                   <p className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">
                     Đang phản hồi {replyingTo.userId === user.id ? 'chính mình' : (replyingTo.user?.firstName || 'AI')}
                   </p>
-                  <p className="text-xs text-gray-500 truncate italic">"{replyingTo.content}"</p>
+                  <p className="text-xs text-gray-500 truncate italic">&ldquo;{replyingTo.content}&rdquo;</p>
                 </div>
               </div>
               <button 

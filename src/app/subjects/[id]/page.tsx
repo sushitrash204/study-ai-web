@@ -74,17 +74,25 @@ export default function SubjectDetailPage({ params }: { params: Promise<{ id: st
     } = state;
 
     useEffect(() => {
-        if (isSystemSubject) {
-            setLoadingLessons(true);
-            subjectService.getLessonsBySubject(id)
-                .then(setLessons)
-                .catch(() => setLessons([]))
-                .finally(() => setLoadingLessons(false));
-            return;
-        }
+        const loadData = async () => {
+            if (isSystemSubject) {
+                setLoadingLessons(true);
+                try {
+                    const data = await subjectService.getLessonsBySubject(id);
+                    setLessons(data);
+                } catch {
+                    setLessons([]);
+                } finally {
+                    setLoadingLessons(false);
+                }
+                return;
+            }
 
-        actions.fetchExercises();
-    }, [actions.fetchExercises, id, isSystemSubject]);
+            await actions.fetchExercises();
+        };
+
+        void loadData();
+    }, [actions, id, isSystemSubject]);
 
     const completedCount = exercises.filter(e => !!e.latestSubmission).length;
     const totalCount = exercises.length;

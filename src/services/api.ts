@@ -1,7 +1,36 @@
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const normalizeApiBaseUrl = (rawUrl?: string): string => {
+    if (!rawUrl) {
+        return '';
+    }
+
+    return rawUrl.endsWith('/api') ? rawUrl : `${rawUrl.replace(/\/$/, '')}/api`;
+};
+
+const getRuntimeApiUrl = (): string => {
+    const configuredApiUrl = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_URL);
+    if (configuredApiUrl) {
+        return configuredApiUrl;
+    }
+
+    const configuredApiBase = normalizeApiBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);
+    if (configuredApiBase) {
+        return configuredApiBase;
+    }
+
+    const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || '3000';
+
+    if (typeof window !== 'undefined') {
+        const { protocol, hostname } = window.location;
+        return `${protocol}//${hostname}:${backendPort}/api`;
+    }
+
+    return `http://localhost:${backendPort}/api`;
+};
+
+const API_URL = getRuntimeApiUrl();
 
 const api = axios.create({
     baseURL: API_URL,

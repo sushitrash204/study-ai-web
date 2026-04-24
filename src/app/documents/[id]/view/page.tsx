@@ -23,6 +23,30 @@ export default function PDFViewerPage({ params }: { params: Promise<{ id: string
     const containerRef = useRef<HTMLDivElement>(null);
     const pdfDocRef = useRef<any>(null);
 
+    const renderPage = async (pageNo: number, scale: number) => {
+        if (!pdfDocRef.current || !containerRef.current) return;
+
+        const page = await pdfDocRef.current.getPage(pageNo);
+        const viewport = page.getViewport({ scale });
+        
+        let canvas = containerRef.current.querySelector('canvas');
+        if (!canvas) {
+            canvas = document.createElement('canvas');
+            containerRef.current.appendChild(canvas);
+        }
+
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = {
+            canvasContext: context,
+            viewport: viewport
+        };
+        await page.render(renderContext).promise;
+        setCurrentPage(pageNo);
+    };
+
     useEffect(() => {
         if (!url) {
             alert('Không tìm thấy đường dẫn tài liệu');
@@ -52,31 +76,6 @@ export default function PDFViewerPage({ params }: { params: Promise<{ id: string
             document.head.removeChild(script);
         };
     }, [url, router]);
-
-    const renderPage = async (pageNo: number, scale: number) => {
-        if (!pdfDocRef.current || !containerRef.current) return;
-
-        const page = await pdfDocRef.current.getPage(pageNo);
-        const viewport = page.getViewport({ scale });
-        
-        // Use a canvas to render
-        let canvas = containerRef.current.querySelector('canvas');
-        if (!canvas) {
-            canvas = document.createElement('canvas');
-            containerRef.current.appendChild(canvas);
-        }
-
-        const context = canvas.getContext('2d');
-        canvas.height = viewport.height;
-        canvas.width = viewport.width;
-
-        const renderContext = {
-            canvasContext: context,
-            viewport: viewport
-        };
-        await page.render(renderContext).promise;
-        setCurrentPage(pageNo);
-    };
 
     const handleZoomIn = () => {
         const newZoom = Math.min(zoom + 0.25, 3);

@@ -146,20 +146,24 @@ export default function SubjectLessonDetailPage({ params }: { params: Promise<{ 
             return;
         }
 
-        setRelatedLoading(true);
-        Promise.all([
-            exerciseService.getExercisesBySubject(lesson.subjectId),
-            documentService.getDocumentsBySubject(lesson.subjectId),
-        ])
-            .then(([exercises, documents]) => {
+        const loadRelatedContent = async () => {
+            setRelatedLoading(true);
+            try {
+                const [exercises, documents] = await Promise.all([
+                    exerciseService.getExercisesBySubject(lesson.subjectId),
+                    documentService.getDocumentsBySubject(lesson.subjectId),
+                ]);
                 setRelatedExercises(exercises.filter((exercise) => exercise.lessonId === lesson.id));
                 setRelatedDocuments(documents.filter((document) => document.lessonId === lesson.id));
-            })
-            .catch(() => {
+            } catch {
                 setRelatedExercises([]);
                 setRelatedDocuments([]);
-            })
-            .finally(() => setRelatedLoading(false));
+            } finally {
+                setRelatedLoading(false);
+            }
+        };
+
+        void loadRelatedContent();
     }, [lesson]);
 
     const blocks = useMemo(() => {

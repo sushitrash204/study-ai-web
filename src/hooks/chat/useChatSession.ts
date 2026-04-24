@@ -27,18 +27,15 @@ export const useChatSession = (routeParams: ChatRouteParams) => {
     const subjectDocuments = selectedSubjectId ? documents.filter(d => d.subjectId === selectedSubjectId) : [];
     const pdfDocuments = subjectDocuments.filter(d => (d.fileType || '').toLowerCase() === 'pdf');
 
-    const openDocumentPicker = useCallback(async () => {
+    const openDocumentPicker = async () => {
         setPickerVisible(true);
         await subjectActions.fetchAll();
         await documentActions.fetchDocuments(true);
-    }, [subjectActions, documentActions]);
 
-    useEffect(() => {
-        if (pickerVisible && subjects.length > 0 && !selectedSubjectId) {
-            const firstSubjectId = subjects[0].id;
-            setSelectedSubjectId(firstSubjectId);
+        if (!selectedSubjectId && subjects.length > 0) {
+            setSelectedSubjectId(subjects[0].id);
         }
-    }, [pickerVisible, subjects, selectedSubjectId]);
+    };
 
     const activateDocumentContext = useCallback(async (
         documentId: string,
@@ -64,6 +61,8 @@ export const useChatSession = (routeParams: ChatRouteParams) => {
         }
 
         handledRequestRef.current = requestId;
+        // Route-driven activation needs to happen after mount when params are available.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         activateDocumentContext(documentId, title, 'route');
     }, [routeParams, activateDocumentContext]);
 

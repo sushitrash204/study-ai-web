@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNotificationStore } from '../../store/notificationStore';
+import { useAuthStore } from '../../store/authStore';
 
 /**
  * Hook để lấy số lượng thông báo chưa đọc
@@ -9,10 +10,10 @@ export const useUnreadCount = (autoRefresh: boolean = true, intervalMs: number =
   const { unreadCount, fetchUnreadCount, updateUnreadCount } = useNotificationStore();
   const [loading, setLoading] = useState(false);
 
-  const { isAuthenticated } = (require('../../store/authStore')).useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   // Fetch unread count
-  const refresh = async () => {
+  const refresh = useCallback(async () => {
     if (!isAuthenticated) return;
     setLoading(true);
     try {
@@ -22,7 +23,7 @@ export const useUnreadCount = (autoRefresh: boolean = true, intervalMs: number =
     } finally {
       setLoading(false);
     }
-  };
+  }, [fetchUnreadCount, isAuthenticated]);
 
   // Auto polling nếu enabled
   useEffect(() => {
@@ -36,7 +37,7 @@ export const useUnreadCount = (autoRefresh: boolean = true, intervalMs: number =
 
     // Cleanup
     return () => clearInterval(interval);
-  }, [autoRefresh, intervalMs]);
+  }, [autoRefresh, intervalMs, refresh]);
 
   return {
     count: unreadCount,

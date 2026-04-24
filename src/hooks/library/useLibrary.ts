@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { useAuthStore } from '../../store/authStore';
 import { useExercises } from '../exercises/useExercises';
 import { useDocuments } from '../documents/useDocuments';
@@ -22,9 +22,6 @@ export const useLibrary = () => {
         autoFetch: isAuthenticated
     });
 
-    const { actions: exActions } = useExercises();
-
-    const [sections, setSections] = useState<Section[]>([]);
     const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
     const [selectedClassId, setSelectedClassId] = useState<string | null>(null);
 
@@ -35,21 +32,21 @@ export const useLibrary = () => {
     const personalDocuments = useMemo(() => documents.filter((doc) => doc.lessonId === null), [documents]);
 
     // Group documents into sections by subject
-    useEffect(() => {
-        if (!subjects || !documents) return;
-        
-        const allAvailableSubjects = [...subjects, ...systemSubjects];
-        const personalDocuments = documents.filter((doc) => doc.lessonId === null);
-        
-        const grouped: Section[] = allAvailableSubjects.map(sub => ({
-            id: sub.id,
-            title: sub.name || 'Không tên',
-            color: sub.color || '#007AFF',
-            className: sub.class?.name,
-            data: personalDocuments.filter(doc => doc.subjectId === sub.id)
-        })).filter(sec => sec.data && sec.data.length > 0);
+    const sections = useMemo(() => {
+        if (!subjects || !documents) return [] as Section[];
 
-        setSections(grouped);
+        const allAvailableSubjects = [...subjects, ...systemSubjects];
+        const personalDocs = documents.filter((doc) => doc.lessonId === null);
+
+        return allAvailableSubjects
+            .map((sub) => ({
+                id: sub.id,
+                title: sub.name || 'Không tên',
+                color: sub.color || '#007AFF',
+                className: sub.class?.name,
+                data: personalDocs.filter((doc) => doc.subjectId === sub.id),
+            }))
+            .filter((sec) => sec.data && sec.data.length > 0);
     }, [subjects, systemSubjects, documents]);
 
     // Lọc môn học hiển thị trong Modal tải lên dựa theo lớp đã chọn

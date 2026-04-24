@@ -14,4 +14,5 @@ export * from './studyGroup';
 export * from './admin';
 export * from './sharedResults';
 export * from './notification';
+export * from './community';
 

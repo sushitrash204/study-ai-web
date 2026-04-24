@@ -227,7 +227,7 @@ export default function GroupSettings({ group, onUpdate }: GroupSettingsProps) {
                    <div className="space-y-4 animate-in slide-in-from-top-2 duration-300">
                       <div className="p-4 bg-white rounded-2xl border border-red-200">
                          <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest mb-3 text-center">
-                            Nhập tên nhóm <span className="text-red-500">"{group.name}"</span> để xác nhận
+                           Nhập tên nhóm <span className="text-red-500">&ldquo;{group.name}&rdquo;</span> để xác nhận
                          </p>
                          <input 
                             type="text"

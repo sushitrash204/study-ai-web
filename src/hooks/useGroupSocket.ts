@@ -1,7 +1,28 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import io, { Socket } from 'socket.io-client';
 
-const SOCKET_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000').replace(/\/api$/, '');
+const getSocketUrl = (): string => {
+  const configuredApiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (configuredApiUrl) {
+    return configuredApiUrl.replace(/\/api$/, '');
+  }
+
+  const configuredApiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (configuredApiBase) {
+    return configuredApiBase.replace(/\/api$/, '');
+  }
+
+  const backendPort = process.env.NEXT_PUBLIC_BACKEND_PORT || '3000';
+
+  if (typeof window !== 'undefined') {
+    const { protocol, hostname } = window.location;
+    return `${protocol}//${hostname}:${backendPort}`;
+  }
+
+  return `http://localhost:${backendPort}`;
+};
+
+const SOCKET_URL = getSocketUrl();
 
 interface SocketMessage {
   id: string;

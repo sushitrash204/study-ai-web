@@ -150,7 +150,7 @@ function ChatContent() {
                   Hướng dẫn
                 </h4>
                 <p className="text-[11px] text-[#6B7280] leading-relaxed">
-                  Khi chọn tài liệu, AI sẽ chỉ trả lời dựa trên nội dung có trong PDF đó. Để hỏi các kiến thức ngoài tài liệu, vui lòng "Xóa ngữ cảnh PDF".
+                  Khi chọn tài liệu, AI sẽ chỉ trả lời dựa trên nội dung có trong PDF đó. Để hỏi các kiến thức ngoài tài liệu, vui lòng xóa ngữ cảnh PDF.
                 </p>
              </div>
           </div>

@@ -37,7 +37,7 @@ export function TopNavbar() {
   const baseNavItems: NavItem[] = [
     { icon: LayoutDashboard, label: 'Tổng quan', href: '/' },
     { icon: BookOpen, label: 'Môn học', href: '/subjects' },
-    { icon: Users, label: 'Học nhóm', href: '/study-groups' },
+    { icon: Users, label: 'Cộng đồng', href: '/study-groups' },
     { icon: MessageSquare, label: 'Thảo luận AI', href: '/chat' },
     { icon: FileText, label: 'Tài liệu', href: '/documents' },
   ];
@@ -63,7 +63,7 @@ export function TopNavbar() {
           {[
             { label: 'Tổng quan', href: '/' },
             { label: 'Thư viện', href: '/subjects' },
-            { label: 'Học nhóm', href: '/study-groups' },
+            { label: 'Cộng đồng', href: '/study-groups' },
             { label: 'Chat AI', href: '/chat' },
             { label: 'Tài liệu', href: '/documents' },
           ].map((item, i) => {
@@ -175,7 +175,7 @@ export function Sidebar() {
   const navItems: NavItem[] = [
     { icon: LayoutDashboard, label: 'Tổng quan', href: '/' },
     { icon: BookOpen, label: 'Môn học', href: '/subjects' },
-    { icon: Users, label: 'Học nhóm', href: '/study-groups' },
+    { icon: Users, label: 'Cộng đồng', href: '/study-groups' },
     { icon: MessageSquare, label: 'Thảo luận AI', href: '/chat' },
     { icon: FileText, label: 'Tài liệu', href: '/documents' },
     { icon: UserIcon, label: 'Cá nhân', href: '/profile' },
@@ -260,7 +260,7 @@ export function BottomNav() {
     { icon: LayoutDashboard, href: '/', label: "Trang chủ" },
     { icon: BookOpen, href: '/subjects', label: "Thư viện" },
     { icon: MessageSquare, href: '/chat', label: "AI Chat" },
-    { icon: Users, href: '/study-groups', label: "Học nhóm" },
+    { icon: Users, href: '/study-groups', label: "Cộng đồng" },
     { icon: UserIcon, href: '/profile', label: "Cài đặt" },
   ];
 
